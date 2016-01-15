@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.system.web.dao.IUserDao">
+	
+	<resultMap type="com.medical.manager.system.web.model.TblUser" id="userResultMap">
+		<id column="ID" property="id" javaType="Long" jdbcType="BIGINT"/>
+		<result column="USER_CODE" property="userCode" javaType="String" jdbcType="VARCHAR"/>
+		<result column="USER_NAME" property="userName" javaType="String" jdbcType="VARCHAR"/>
+		<result column="USER_MOBILE" property="userMobile" javaType="String" jdbcType="VARCHAR"/>
+		<result column="USER_EMAIL" property="userEmail" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_OPER" property="modifyOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_DATE" property="modifyDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_TIME" property="modifyTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="REMARK" property="remark" javaType="String" jdbcType="VARCHAR"/>
+        <result column="USER_UNIT" property="userUnit"/>
+        <result column="USER_PROVINCE" property="userProvince"/>
+        <result column="USER_CITY" property="userCity"/>
+        <result column="LAST_LOGIN_TIME" property="lastLoginTime"/>
+        <result column="LAST_LOGIN_IP" property="lastLoginIp"/>
+        <result column="CURRENT_STATUS" property="currentStatus"/>
+        <association property="userRole" column="ID" javaType="com.medical.manager.system.web.model.TblUserRole">
+            <id column="UR_ID" property="id"/>
+            <result column="UR_USER_ID" property="userId"/>
+            <result column="UR_USER_CODE" property="userCode"/>
+            <result column="UR_ROLE_ID" property="roleId"/>
+            <association property="role" column="UR_ROLE_ID" javaType="com.medical.manager.system.web.model.TblRole">
+                <id column="ROLE_ID" property="roleId"/>
+                <result column="ROLE_NAME" property="roleName"/>
+            </association>
+        </association>
+	</resultMap>
+	
+	<resultMap type="com.medical.manager.system.web.model.TblUserRole" id="userRoleResultMap">
+		<id column="ID" property="id"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="USER_CODE" property="userCode"/>
+		<result column="ROLE_ID" property="roleId"/>
+		<result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_OPER" property="modifyOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_DATE" property="modifyDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_TIME" property="modifyTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="REMARK" property="remark" javaType="String" jdbcType="VARCHAR"/>
+	</resultMap>
+    
+    <resultMap type="com.medical.manager.system.web.model.TblRole" id="roleResultMap">
+        <id column="ROLE_ID" property="roleId"/>
+        <result column="ROLE_NAME" property="roleName"/>
+        <result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+        <result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+        <result column="MODIFY_OPER" property="modifyOper" javaType="String" jdbcType="VARCHAR"/>
+        <result column="MODIFY_DATE" property="modifyDate" javaType="String" jdbcType="VARCHAR"/>
+        <result column="MODIFY_TIME" property="modifyTime" javaType="String" jdbcType="VARCHAR"/>
+        <result column="REMARK" property="remark" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+	
+	<parameterMap type="com.medical.manager.system.web.model.TblUser" id="userParamMap">
+		<parameter property="id" resultMap="ID"/>
+		<parameter property="userCode" resultMap="USER_CODE"/>
+		<parameter property="userName" resultMap="USER_NAME"/>
+	</parameterMap>
+	
+	<select id="findUserWithPaging" resultMap="userResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+            select u.*, ur.ID UR_ID, ur.USER_ID UR_USER_ID, ur.USER_CODE UR_USER_CODE, ur.ROLE_ID UR_ROLE_ID,
+                   r.ROLE_ID, r.ROLE_NAME
+            from TBL_USER u 
+            left join TBL_USER_ROLE ur
+            on(u.ID = ur.USER_ID)
+            left join TBL_ROLE r
+            on(ur.ROLE_ID = r.ROLE_ID)
+		]]>
+        <where>
+            <if test="userCode != null and userCode != ''">
+                <![CDATA[
+				    u.USER_CODE = #{userCode}
+                ]]>
+			</if>
+            <if test="roleId != null and roleId != ''">
+                <![CDATA[
+                    and ur.ROLE_ID = #{roleId}
+                ]]>
+            </if>
+            <if test="currentStatus != null and currentStatus != ''">
+                <![CDATA[
+                    and u.CURRENT_STATUS = #{currentStatus}
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by u.ID
+        ]]>
+	</select>
+	
+	<select id="findUserByIds" resultMap="userResultMap" parameterType="java.util.List">
+		<![CDATA[
+			select
+				*
+			from TBL_USER where ID in
+		]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+	</select>
+    
+    <select id="findUserById" resultType="com.medical.manager.system.web.model.TblUser" parameterType="Long">
+        <![CDATA[
+            select
+                ID id,
+                USER_CODE userCode,
+                USER_NAME userName,
+                USER_MOBILE userMobile,
+                USER_EMAIL userEmail,
+                CREATE_OPER createOper,
+                CREATE_DATE createDate,
+                CREATE_TIME createTime,
+                MODIFY_OPER modifyOper,
+                MODIFY_DATE modifyDate,
+                MODIFY_TIME modifyTime,
+                REMARK remark,
+                USER_UNIT userUnit,
+                USER_PROVINCE userProvince,
+                USER_CITY userCity,
+                LAST_LOGIN_TIME lastLoginTime,
+                LAST_LOGIN_IP lastLoginIp,
+                CURRENT_STATUS currentStatus
+            from TBL_USER where ID = #{id}
+        ]]>
+    </select>
+	
+	<select id="findUserByUserCode" resultType="com.medical.manager.system.web.model.TblUser" parameterType="String">
+		<![CDATA[
+			select 
+				ID id,
+				USER_CODE userCode,
+				USER_NAME userName,
+				USER_MOBILE userMobile,
+				USER_EMAIL userEmail,
+				CREATE_OPER createOper,
+				CREATE_DATE createDate,
+				CREATE_TIME createTime,
+				MODIFY_OPER modifyOper,
+				MODIFY_DATE modifyDate,
+				MODIFY_TIME modifyTime,
+				REMARK remark,
+                USER_UNIT userUnit,
+                USER_PROVINCE userProvince,
+                USER_CITY userCity,
+                LAST_LOGIN_TIME lastLoginTime,
+                LAST_LOGIN_IP lastLoginIp,
+                CURRENT_STATUS currentStatus
+			from TBL_USER where USER_CODE = #{userCode}
+		]]>
+	</select>
+	
+	<select id="findUsers" resultMap="userResultMap" parameterType="com.medical.manager.system.web.model.TblUser">
+		<![CDATA[
+			select u.*, ur.ID UR_ID, ur.USER_ID UR_USER_ID, ur.USER_CODE UR_USER_CODE, ur.ROLE_ID UR_ROLE_ID,
+                   r.ROLE_ID, r.ROLE_NAME
+            from TBL_USER u 
+            left join TBL_USER_ROLE ur
+            on(u.ID = ur.USER_ID)
+            left join TBL_ROLE r
+            on(ur.ROLE_ID = r.ID)
+		]]>
+		<where>
+			<if test="id != null">
+				ID = #{id}
+			</if>
+			<if test="userCode != null">
+				and USER_CODE = #{userCode}
+			</if>
+			<if test="userName != null">
+				and USER_NAME like CONCAT(CONCAT('%', #{userName}), '%')
+			</if>
+			<if test="userMobile != null">
+				and USER_MOBILE = #{userMobile}
+			</if>
+			<if test="userEmail != null">
+				and USER_EMAIL = #{userEmail}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findUserRoleByUserId" resultMap="userRoleResultMap" parameterType="Long">
+		<![CDATA[
+			select * from TBL_USER_ROLE where USER_ID = #{userId}
+		]]>
+	</select>
+	
+	<select id="findUserRoleByUserCode" resultMap="userRoleResultMap" parameterType="String">
+		<![CDATA[
+			select * from TBL_USER_ROLE where USER_CODE = #{userCode}
+		]]>
+	</select>
+	
+	<select id="findUserRoleByRoleId" resultMap="userRoleResultMap" parameterType="Long">
+		<![CDATA[
+			select * from TBL_USER_ROLE where ROLE_ID = #{roleId}
+		]]>
+	</select>
+	
+	<delete id="deleteUserRoleByRoleId" parameterType="Long">
+		<![CDATA[
+			delete from TBL_USER_ROLE where ROLE_ID = #{roleId}
+		]]>
+	</delete>
+	
+	<delete id="deleteUserRoleByUserId" parameterType="Long">
+		<![CDATA[
+			delete from TBL_USER_ROLE where USER_ID = #{userId}
+		]]>
+	</delete>
+    
+    <delete id="deleteUserRoleByUserIds" parameterType="java.util.List">
+        <![CDATA[
+            delete from TBL_USER_ROLE where USER_ID in 
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+    </delete>
+	
+	
+	<insert id="addNewUser" useGeneratedKeys="true" keyProperty="id" parameterType="com.medical.manager.system.web.model.TblUser">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_USER(USER_CODE, USER_NAME, USER_MOBILE, USER_EMAIL, CREATE_OPER,
+				CREATE_DATE, CREATE_TIME, MODIFY_OPER, MODIFY_DATE, MODIFY_TIME, REMARK,
+                USER_UNIT, USER_PROVINCE, USER_CITY, LAST_LOGIN_TIME, LAST_LOGIN_IP,
+                CURRENT_STATUS )
+			values(#{userCode}, #{userName}, #{userMobile}, #{userEmail}, #{createOper},
+				#{createDate}, #{createTime}, #{modifyOper}, #{modifyDate}, #{modifyTime},
+				#{remark}, #{userUnit}, #{userProvince}, #{userCity}, #{lastLoginTime}, 
+                #{lastLoginIp}, #{currentStatus})
+		]]>
+	</insert>
+	
+	<update id="updateUser" parameterType="com.medical.manager.system.web.model.TblUser">
+		<![CDATA[
+			update TBL_USER
+		]]>
+		<set>
+			<if test="userName != null">
+				USER_NAME = #{userName},
+			</if>
+			<if test="userMobile != null">
+				USER_MOBILE = #{userMobile},
+			</if>
+			<if test="userEmail != null">
+				USER_EMAIL = #{userEmail},
+			</if>
+			<if test="modifyOper != null">
+				MODIFY_OPER = #{modifyOper}, 
+			</if>
+			<if test="modifyDate != null">
+				MODIFY_DATE = #{modifyDate}, 
+			</if>
+			<if test="modifyTime != null">
+				MODIFY_TIME = #{modifyTime},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark},
+			</if>
+            <if test="userUnit != null">
+                USER_UNIT = #{userUnit},
+            </if>
+            <if test="userProvince != null">
+                USER_PROVINCE = #{userProvince},
+            </if>
+            <if test="userCity != null">
+                USER_CITY = #{userCity},
+            </if>
+            <if test="lastLoginTime != null">
+                LAST_LOGIN_TIME = #{lastLoginTime},
+            </if>
+            <if test="lastLoginIp != null">
+                LAST_LOGIN_IP = #{lastLoginIp},
+            </if>
+            <if test="currentStatus != null">
+                CURRENT_STATUS = #{currentStatus}
+            </if>
+		</set>
+		<where>
+			<if test="id != null">
+				ID = #{id}
+			</if>
+			<if test="userCode != null">
+				and USER_CODE = #{userCode}
+			</if>
+		</where>
+	</update>
+    <!-- 更新上次登录信息 -->
+    <update id="updateUserLastLogin" parameterType="com.medical.manager.system.web.model.TblUser">
+        <![CDATA[
+            update TBL_USER set LAST_LOGIN_TIME = #{lastLoginTime}, LAST_LOGIN_IP = #{lastLoginIp}
+            where ID = #{id}
+        ]]>
+    </update>
+    
+    <!-- 批量更新用户状态 -->
+    <update id="updateUsersStatus" parameterType="java.util.List">
+        <foreach collection="list" index="index" item="item" open="" close="" separator=";">
+            <![CDATA[
+                update TBL_USER set CURRENT_STATUS = #{item.currentStatus}
+                where ID = #{item.id}
+            ]]>
+        </foreach>
+    </update>
+	
+	<delete id="deleteUser" parameterType="Long">
+		<![CDATA[
+			delete from TBL_USER where ID = #{id}
+		]]>
+	</delete>
+    
+    <delete id="deleteUsers" parameterType="java.util.List">
+        <![CDATA[
+            delete from TBL_USER where ID in
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+    </delete>
+	
+	<insert id="addNewUserRole" parameterType="com.medical.manager.system.web.model.TblUserRole">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_USER_ROLE(USER_ID, USER_CODE, ROLE_ID, CREATE_OPER,
+				CREATE_DATE, CREATE_TIME, MODIFY_OPER, MODIFY_DATE, MODIFY_TIME, REMARK)
+			values(#{userId}, #{userCode}, #{roleId}, #{createOper},
+				#{createDate}, #{createTime}, #{modifyOper}, #{modifyDate}, #{modifyTime},
+				#{remark})
+		]]>
+	</insert>
+	
+	<update id="updateUserRoleById" parameterType="com.medical.manager.system.web.model.TblUserRole">
+		<![CDATA[
+			update TBL_USER_ROLE 
+		]]>
+		<set>
+			<if test="roleId != null">
+				ROLE_ID = #{roleId},
+			</if>
+			<if test="userCode != null">
+				USER_CODE = #{userCode},
+			</if>
+			<if test="userId != null">
+				USER_ID = #{userId},
+			</if>
+			<if test="modifyOper != null">
+				MODIFY_OPER = #{modifyOper}, 
+			</if>
+			<if test="modifyDate != null">
+				MODIFY_DATE = #{modifyDate}, 
+			</if>
+			<if test="modifyTime != null">
+				MODIFY_TIME = #{modifyTime},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark}
+			</if>
+		</set>
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+</mapper>

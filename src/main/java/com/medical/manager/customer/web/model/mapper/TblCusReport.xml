@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.customer.web.dao.ITblCusReportDao">
+	<resultMap type="com.medical.manager.customer.web.model.TblCusReport" id="TblCusReportMap">
+		<id column="ID" property="id"/>
+		<result column="INFORMANTS" property="informants"/>
+		<result column="REPORTED" property="reported"/>
+		<result column="REPORT_TYPE" property="reportType"/>
+		<result column="REPORT_INFO" property="reportInfo"/>
+		<result column="REPORT_TIME" property="reportTime"/>
+		<result column="DEAL_STATUS" property="dealStatus"/>
+		<result column="DEAL_USER" property="dealUser"/>
+		<result column="DEAL_TIME" property="dealTime"/>
+		<result column="DEAL_INFO" property="dealInfo"/>
+		<result column="REMARK" property="remark"/>
+	</resultMap>
+
+	<sql id="allColumnsSql">
+		ID,INFORMANTS,REPORTED,REPORT_TYPE,
+		REPORT_INFO,REPORT_TIME,DEAL_STATUS,DEAL_USER,
+		DEAL_TIME,DEAL_INFO,REMARK
+	</sql>
+	
+	<sql id="insertAllColumnsSql">
+		ID,INFORMANTS,REPORTED,REPORT_TYPE,
+		REPORT_INFO,REPORT_TIME,DEAL_STATUS,DEAL_USER,
+		DEAL_TIME,DEAL_INFO,REMARK
+	</sql>
+	<sql id="insertSql">
+		#{informants,jdbcType=VARCHAR},
+		#{reported,jdbcType=VARCHAR},
+		#{reportType,jdbcType=VARCHAR},
+		#{reportInfo,jdbcType=VARCHAR},
+		#{reportTime,jdbcType=VARCHAR},
+		#{dealStatus,jdbcType=VARCHAR},
+		#{dealUser,jdbcType=VARCHAR},
+		#{dealTime,jdbcType=VARCHAR},
+		#{dealInfo,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}
+	</sql>
+
+	<sql id="updateSql">
+		<if test="informants != null">INFORMANTS = #{informants,jdbcType=VARCHAR},</if>
+		<if test="reported != null">REPORTED = #{reported,jdbcType=VARCHAR},</if>
+		<if test="reportType != null">REPORT_TYPE = #{reportType,jdbcType=VARCHAR},</if>
+		<if test="reportInfo != null">REPORT_INFO = #{reportInfo,jdbcType=VARCHAR},</if>
+		<if test="reportTime != null">REPORT_TIME = #{reportTime,jdbcType=VARCHAR},</if>
+		<if test="dealStatus != null">DEAL_STATUS = #{dealStatus,jdbcType=VARCHAR},</if>
+		<if test="dealUser != null">DEAL_USER = #{dealUser,jdbcType=VARCHAR},</if>
+		<if test="dealTime != null">DEAL_TIME = #{dealTime,jdbcType=VARCHAR},</if>
+		<if test="dealInfo != null">DEAL_INFO = #{dealInfo,jdbcType=VARCHAR},</if>
+		<if test="remark != null">REMARK = #{remark,jdbcType=VARCHAR},</if>
+	</sql>
+	
+	<!--  -->
+	<select id="queryTblCusReportById" parameterType="java.lang.String" resultMap="TblCusReportMap">
+		select <include refid="allColumnsSql"/>
+		from TBL_CUS_REPORT
+		where ID = #{ID,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询用户信息 -->
+	<select id="queryTblCusReportList" parameterType="java.util.HashMap" resultMap="TblCusReportMap">
+		select *
+		from TBL_CUS_REPORT
+		<where>
+			 <if test="informants != null">	AND INFORMANTS = #{informants}	</if>
+			 <if test="reported != null">	AND REPORTED = #{reported}		</if>
+			 <if test="reportType != null">	AND REPORT_TYPE = #{reportType}	</if>
+			 <if test="dealStatus != null">	AND DEAL_STATUS = #{dealStatus}	</if>
+		</where>
+	</select>	
+</mapper>

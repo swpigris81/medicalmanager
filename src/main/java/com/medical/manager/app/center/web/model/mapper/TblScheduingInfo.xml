@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.center.web.dao.TblScheduingInfoDao">
+	<resultMap type="com.medical.manager.app.center.web.model.TblScheduingInfo" id="findScheduingInfoResultMap">
+		<id column="ID" property="id"/>
+		<result column="ALARM_ID" property="alarmId"/>
+        <result column="INCIDENT_TIME" property="incidentTime"/>
+        <result column="SCHEDULING_PHONE" property="schedulingPhone"/>
+        <result column="SCHEDULING_ORG" property="schedulingOrg"/>
+        <result column="CALLING_NUMBER" property="callingNumber"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.app.center.web.model.TblScheduingInfo" parameterType="Long">
+		<![CDATA[
+			select 
+                ID id,
+				ALARM_ID alarmId,
+                INCIDENT_TIME incidentTime,
+                SCHEDULING_PHONE schedulingPhone,
+                SCHEDULING_ORG schedulingOrg,
+                CALLING_NUMBER callingNumber
+			from TBL_SCHEDULING_INFO where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findScheduingInfo" resultMap="findScheduingInfoResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_SCHEDULING_INFO where 1=1
+		]]>
+		<if test="alarmId != null and alarmId != ''">
+			<![CDATA[
+				and ALARM_ID = #{alarmId}
+			]]>
+		</if>
+		<if test="callingNumber != null and callingNumber != ''">
+			<![CDATA[
+				and CALLING_NUMBER = #{callingNumber}
+			]]>
+		</if>
+		<if test="schedulingPhone != null and schedulingPhone != ''">
+			<![CDATA[
+				and SCHEDULING_PHONE = #{schedulingPhone}
+			]]>
+		</if>
+		<if test="id != null and id != ''">
+			<![CDATA[
+				and ID = #{id}
+			]]>
+		</if>
+	</select>
+</mapper>

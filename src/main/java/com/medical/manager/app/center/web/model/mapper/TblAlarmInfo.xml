@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.center.web.dao.TblAlarmInfoDao">
+	<resultMap type="com.medical.manager.app.center.web.model.TblAlarmInfo" id="findAlarmInfoResultMap">
+		<id column="ID" property="id"/>
+		<result column="MOBILE_NO" property="mobileNo"/>
+        <result column="ALARM_TIME" property="alarmTime"/>
+        <result column="LINK_INFO" property="linkInfo"/>
+        <result column="ALARM_TITLE" property="alarmTitle"/>
+        <result column="ALARM_INFO" property="alarmInfo"/>
+        <result column="ALARM_ADDRESS" property="alarmAddress"/>
+        <result column="SAVE_NUM" property="saveNum"/>
+        <result column="NEED_ANBULANCE_NUM" property="needAnbulanceNum"/>
+        <result column="IS_ATTACK" property="isAttack"/>
+        <result column="IS_SPECIFY_HOS" property="isSpecifyHos"/>
+        <result column="incident_time" property="incidentTime"/>
+        <result column="WAITING_ADD" property="waitingAdd"/>
+        <result column="BELONG_AREA" property="belongArea"/>
+        <result column="patient_name" property="patientName"/>
+        <result column="patient_sex" property="patientSex"/>
+        <result column="patient_age" property="patientAge"/>
+        <result column="patient_mobile" property="patientMobile"/>
+        <result column="is_harass" property="isHarass"/>
+        <result column="POLICE_ID" property="policeId"/>
+        <result column="POLICE_MOBILE" property="policeMobile"/>
+        <result column="POLICE_NAME" property="policeName"/>
+        <result column="STATUS" property="status"/>
+        <result column="PROVINCE" property="province"/>
+        <result column="CITY" property="city"/>
+        <result column="TALK_TIME" property="talkTime"/>
+        <result column="HOSPITAL" property="hospital"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.app.center.web.model.TblAlarmInfo" parameterType="Long">
+		<![CDATA[
+			select 
+                ID id,
+				MOBILE_NO mobileNo,
+                ALARM_TIME alarmTime,
+                LINK_INFO linkInfo,
+                ALARM_TITLE alarmTitle,
+                ALARM_INFO alarmInfo,
+                ALARM_ADDRESS alarmAddress,
+                SAVE_NUM saveNum,
+                NEED_ANBULANCE_NUM needAnbulanceNum,
+                IS_ATTACK isAttack,
+                IS_SPECIFY_HOS isSpecifyHos,
+                incident_time incidentTime,
+                WAITING_ADD waitingAdd,
+                BELONG_AREA belongArea,
+                patient_name patientName,
+                patient_sex patientSex,
+                patient_age patientAge,
+                patient_mobile patientMobile,
+                is_harass isHarass,
+                POLICE_ID policeId,
+                POLICE_MOBILE policeMobile,
+                POLICE_NAME policeName,
+                STATUS status,
+                PROVINCE province,
+                CITY city,
+                TALK_TIME talkTime,
+                HOSPITAL hospital
+			from TBL_ALARM_INFO where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findAlarmInfo" resultMap="findAlarmInfoResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_ALARM_INFO where 1=1
+		]]>
+		<if test="mobileNo != null and mobileNo != ''">
+			<![CDATA[
+				and MOBILE_NO = #{mobileNo}
+			]]>
+		</if>
+		<if test="id != null and id != ''">
+			<![CDATA[
+				and ID = #{id}
+			]]>
+		</if>
+	</select>
+	
+	<insert id="addNewAlarmInfo" parameterType="com.medical.manager.app.center.web.model.TblAlarmInfo" 
+		useGeneratedKeys="true" keyProperty="id">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_ALARM_INFO(MOBILE_NO, ALARM_TIME, LINK_INFO, ALARM_TITLE, ALARM_INFO,
+                ALARM_ADDRESS, SAVE_NUM, NEED_ANBULANCE_NUM, IS_ATTACK, IS_SPECIFY_HOS, incident_time,
+                WAITING_ADD, BELONG_AREA, patient_name, patient_sex, patient_age, patient_mobile,
+                is_harass, POLICE_ID, POLICE_MOBILE, POLICE_NAME, STATUS,PROVINCE,CITY, TALK_TIME, HOSPITAL)
+			values(#{mobileNo}, #{alarmTime}, #{linkInfo}, #{alarmTitle}, #{alarmInfo}, #{alarmAddress},
+				#{saveNum}, #{needAnbulanceNum}, #{isAttack}, #{isSpecifyHos}, #{incidentTime}, #{waitingAdd},
+                #{belongArea}, #{patientName}, #{patientSex}, #{patientAge}, #{patientMobile}, #{isHarass},
+                #{policeId}, #{policeMobile}, #{policeName}, #{status},#{province},#{city},#{talkTime},#{hospital})
+		]]>
+	</insert>
+	
+	<update id="updateAlarmInfo" parameterType="com.medical.manager.app.center.web.model.TblAlarmInfo">
+		<![CDATA[
+			update TBL_ALARM_INFO 
+		]]>
+		<set>
+			<if test="mobileNo != null and mobileNo != ''">
+				<![CDATA[
+					MOBILE_NO = #{mobileNo},
+				]]>
+			</if>
+			<if test="alarmTime != null and alarmTime != ''">
+				<![CDATA[
+					ALARM_TIME = #{alarmTime},
+				]]>
+			</if>
+            <if test="linkInfo != null and linkInfo != ''">
+                <![CDATA[
+                    LINK_INFO = #{linkInfo},
+                ]]>
+            </if>
+            <if test="alarmTitle != null and alarmTitle != ''">
+                <![CDATA[
+                    ALARM_TITLE = #{alarmTitle},
+                ]]>
+            </if>
+            <if test="alarmInfo != null and alarmInfo != ''">
+                <![CDATA[
+                    ALARM_INFO = #{alarmInfo},
+                ]]>
+            </if>
+            <if test="alarmAddress != null and alarmAddress != ''">
+                <![CDATA[
+                    ALARM_ADDRESS = #{alarmAddress},
+                ]]>
+            </if>
+            <if test="saveNum != null and saveNum != ''">
+                <![CDATA[
+                    SAVE_NUM = #{saveNum},
+                ]]>
+            </if>
+            <if test="needAnbulanceNum != null and needAnbulanceNum != ''">
+                <![CDATA[
+                    NEED_ANBULANCE_NUM = #{needAnbulanceNum},
+                ]]>
+            </if>
+            <if test="isAttack != null and isAttack != ''">
+                <![CDATA[
+                    IS_ATTACK = #{isAttack},
+                ]]>
+            </if>
+            <if test="isSpecifyHos != null and isSpecifyHos != ''">
+                <![CDATA[
+                    IS_SPECIFY_HOS = #{isSpecifyHos},
+                ]]>
+            </if>
+            <if test="incidentTime != null and incidentTime != ''">
+                <![CDATA[
+                    incident_time = #{incidentTime},
+                ]]>
+            </if>
+            <if test="waitingAdd != null and waitingAdd != ''">
+                <![CDATA[
+                    WAITING_ADD = #{waitingAdd},
+                ]]>
+            </if>
+            <if test="belongArea != null and belongArea != ''">
+                <![CDATA[
+                    BELONG_AREA = #{belongArea},
+                ]]>
+            </if>
+            <if test="patientName != null and patientName != ''">
+                <![CDATA[
+                    patient_name = #{patientName},
+                ]]>
+            </if>
+            <if test="patientSex != null and patientSex != ''">
+                <![CDATA[
+                    patient_sex = #{patientSex},
+                ]]>
+            </if>
+            <if test="patientAge != null and patientAge != ''">
+                <![CDATA[
+                    patient_age = #{patientAge},
+                ]]>
+            </if>
+            <if test="patientMobile != null and patientMobile != ''">
+                <![CDATA[
+                    patient_mobile = #{patientMobile},
+                ]]>
+            </if>
+            <if test="isHarass != null and isHarass != ''">
+                <![CDATA[
+                    is_harass = #{isHarass},
+                ]]>
+            </if>
+            <if test="policeId != null and policeId != ''">
+                <![CDATA[
+                    POLICE_ID = #{policeId},
+                ]]>
+            </if>
+            <if test="policeMobile != null and policeMobile != ''">
+                <![CDATA[
+                    POLICE_MOBILE = #{policeMobile},
+                ]]>
+            </if>
+            <if test="policeName != null and policeName != ''">
+                <![CDATA[
+                    POLICE_NAME = #{policeName},
+                ]]>
+            </if>
+            <if test="status != null and status != ''">
+                <![CDATA[
+                    STATUS = #{status},
+                ]]>
+            </if>
+            <if test="province != null and province != ''">
+                <![CDATA[
+                    PROVINCE = #{province},
+                ]]>
+            </if>
+            <if test="city != null and city != ''">
+                <![CDATA[
+                    CITY = #{city},
+                ]]>
+            </if>
+            <if test="talkTime != null and talkTime != ''">
+                <![CDATA[
+                    TALK_TIME = #{talkTime},
+                ]]>
+            </if>
+            <if test="hospital != null and hospital != ''">
+                <![CDATA[
+                    HOSPITAL = #{hospital}
+                ]]>
+            </if>
+		</set>
+		<where>
+			<![CDATA[
+				ID = #{id},
+			]]>
+		</where>
+	</update>
+	<select id="queryCompleteAlarmTaskList" parameterType="map" resultMap="findAlarmInfoResultMap">
+		select * from TBL_ALARM_INFO tai,TBL_ALARM_TASK tat where tai.ID=tat.ALARM_ID
+		<if test="cusId!=null and cusId!=0">
+			and tat.AMBULANCE_ID=#{cusId}
+		</if>
+		<if test="taskStatus!=null and taskStatus!=''">
+			and tat.TASK_STATUS=#{taskStatus}
+		</if>
+		<if test="beginDate != null and beginDate != ''">
+            <![CDATA[
+              and str_to_date(tai.ALARM_TIME, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+            ]]>
+       </if>
+       <if test="endDate != null and endDate != ''">
+          <![CDATA[
+             and str_to_date(tai.ALARM_TIME, '%Y%m%d') <= str_to_date(#{endDate}, '%Y%m%d')
+           ]]>
+       </if>
+		order by tai.ALARM_TIME desc
+	</select>
+</mapper>

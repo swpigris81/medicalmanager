@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.funds.web.dao.ITblRechargeTurnoverDao">
+	<resultMap type="com.medical.manager.funds.web.model.TblRechargeTurnover" id="findRechargeTurnoverResultMap">
+		<id column="ID" property="id"/>
+		<result column="CUST_ID" property="custId"/>
+		<result column="CUST_NAME" property="custName"/>
+		<result column="CUST_MOBILE" property="custMobile"/>
+		<result column="RECHARGE_UNIT" property="rechargeUnit"/>
+        <result column="RECHARGE_TYPE" property="rechargeType"/>
+        <result column="RECHARGE_AMOUNT" property="rechargeAmount"/>
+        <result column="RECEIPT_BANK_ACCOUNT" property="receiptBankAccount"/>
+        <result column="RECHARGE_TIME" property="rechargeTime"/>
+        <result column="EXPIRE_DATE" property="expireDate"/>
+        <result column="RECHARGE_STATUS" property="rechargeStatus"/>
+        <result column="RECHARGE_MODE" property="rechargeMode"/>
+        <result column="RECHARGE_REMARK" property="rechargeRemark"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.funds.web.model.TblRechargeTurnover" parameterType="Long">
+		<![CDATA[
+			select 
+				ID id,
+				CUST_ID custId,
+				CUST_NAME custName,
+				CUST_MOBILE custMobile,
+				RECHARGE_UNIT rechargeUnit,
+                RECHARGE_TYPE rechargeType,
+				RECHARGE_AMOUNT rechargeAmount,
+				RECEIPT_BANK_ACCOUNT receiptBankAccount,
+				RECHARGE_TIME rechargeTime,
+                EXPIRE_DATE expireDate,
+                RECHARGE_STATUS rechargeStatus,
+                RECHARGE_MODE rechargeMode,
+                RECHARGE_REMARK rechargeRemark
+			from TBL_FUND_RECHARGE_TURNOVER where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findRechargeTurnover" resultMap="findRechargeTurnoverResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_FUND_RECHARGE_TURNOVER
+		]]>
+        <where>
+        	<if test="custId != null and custId != ''">
+                <![CDATA[
+                    CUST_ID=#{custId} 
+                ]]>
+			</if>
+            <if test="custName != null and custName != ''">
+                <![CDATA[
+                    CUST_NAME like CONCAT(CONCAT('%', #{custName}), '%')
+                ]]>
+			</if>
+            <if test="custMobile != null and custMobile != ''">
+                <![CDATA[
+                    and CUST_MOBILE = #{custMobile}
+                ]]>
+            </if>
+            <if test="rechargeType != null and rechargeType != ''">
+                <![CDATA[
+                    and RECHARGE_TYPE = #{rechargeType}
+                ]]>
+            </if>
+            <if test="rechargeStatus != null and rechargeStatus != ''">
+                <![CDATA[
+                    and RECHARGE_STATUS = #{rechargeStatus}
+                ]]>
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[
+                    and str_to_date(RECHARGE_TIME, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[
+                    and str_to_date(RECHARGE_TIME, '%Y%m%d') <= str_to_date(#{endDate}, '%Y%m%d')
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by EXPIRE_DATE desc
+        ]]>
+	</select>
+    <!-- 导出数据，进行转义 -->
+    <select id="findRechargeTurnoverExport" resultMap="findRechargeTurnoverResultMap" parameterType="java.util.HashMap">
+        <![CDATA[
+            select 
+                ID,
+                CUST_NAME
+                CUST_MOBILE,
+                RECHARGE_UNIT,
+                case RECHARGE_TYPE 
+                    when "00" then "急救车"
+                    when "01" then "120中心"
+                    when "02" then "其他"
+                END AS RECHARGE_TYPE,
+                RECHARGE_AMOUNT,
+                RECEIPT_BANK_ACCOUNT,
+                RECHARGE_TIME,
+                EXPIRE_DATE,
+                CASE RECHARGE_STATUS
+                    when "00" then "成功"
+                    when "01" then "失败"
+                END AS RECHARGE_STATUS,
+                CASE RECHARGE_MODE
+                    when "00" then "手动充值"
+                    when "01" then "自动充值"
+                END AS RECHARGE_MODE,
+                RECHARGE_REMARK
+            from TBL_FUND_RECHARGE_TURNOVER
+        ]]>
+        <where>
+            <if test="custName != null and custName != ''">
+                <![CDATA[
+                    CUST_NAME like CONCAT(CONCAT('%', #{custName}), '%')
+                ]]>
+            </if>
+            <if test="custMobile != null and custMobile != ''">
+                <![CDATA[
+                    and CUST_MOBILE = #{custMobile}
+                ]]>
+            </if>
+            <if test="rechargeType != null and rechargeType != ''">
+                <![CDATA[
+                    and RECHARGE_TYPE = #{rechargeType}
+                ]]>
+            </if>
+            <if test="rechargeStatus != null and rechargeStatus != ''">
+                <![CDATA[
+                    and RECHARGE_STATUS = #{rechargeStatus}
+                ]]>
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[
+                    and str_to_date(RECHARGE_TIME, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[
+                    and str_to_date(RECHARGE_TIME, '%Y%m%d') <= str_to_date(#{endDate}, '%Y%m%d')
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by EXPIRE_DATE desc
+        ]]>
+    </select>
+	
+	<select id="findRechargeTurnoverByIds" resultMap="findRechargeTurnoverResultMap" parameterType="java.util.List">
+		<![CDATA[
+			select *
+			from TBL_FUND_RECHARGE_TURNOVER where ID in
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+	</select>
+	<select id="queryCostExpireNotice" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		<![CDATA[
+			select count(*)
+			from TBL_FUND_RECHARGE_TURNOVER where EXPIRE_DATE<=#{preDate} 
+        ]]>
+        <if test="nowDate!=null">
+        	and EXPIRE_DATE>=#{nowDate}
+        </if>
+	</select>
+	<insert id="insert" parameterType="com.medical.manager.funds.web.model.TblRechargeTurnover">
+    insert into tbl_fund_recharge_turnover (CUST_ID, CUST_NAME, 
+      CUST_MOBILE, RECHARGE_UNIT, RECHARGE_TYPE, 
+      RECHARGE_AMOUNT, RECEIPT_BANK_ACCOUNT, RECHARGE_MONTH, 
+      RECHARGE_TIME, EXPIRE_DATE, RECHARGE_STATUS, 
+      RECHARGE_MODE, RECHARGE_REMARK)
+    values (#{custId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR}, 
+      #{custMobile,jdbcType=VARCHAR}, #{rechargeUnit,jdbcType=VARCHAR}, #{rechargeType,jdbcType=VARCHAR}, 
+      #{rechargeAmount,jdbcType=DECIMAL}, #{receiptBankAccount,jdbcType=VARCHAR}, #{rechargeMonth,jdbcType=INTEGER}, 
+      #{rechargeTime,jdbcType=VARCHAR}, #{expireDate,jdbcType=VARCHAR}, #{rechargeStatus,jdbcType=VARCHAR}, 
+      #{rechargeMode,jdbcType=VARCHAR}, #{rechargeRemark,jdbcType=VARCHAR})
+  </insert>
+  
+  	<!-- 查询客户累计成功充值金额 -->
+	<select id="querySumRecharge" parameterType="Long" resultType="Long">
+		SELECT	SUM(t.recharge_amount)
+		FROM	tbl_fund_recharge_turnover t
+		WHERE	t.recharge_status = '00'
+		AND 	t.cust_id = #{cusId}
+	</select>
+</mapper>

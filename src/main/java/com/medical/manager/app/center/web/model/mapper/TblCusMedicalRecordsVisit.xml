@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.center.web.dao.TblAlarmInfoDao">
+	<resultMap id="TblCusMedicalRecordsVisitMap"
+		type="com.medical.manager.app.center.web.model.TblCusMedicalRecordsVisit">
+		<id column="id" property="id" />
+		<result column="record_id" property="record_id" />
+		<result column="visit_cus_id" property="visit_cus_id" />
+	</resultMap>
+
+	<insert id="insert" parameterType="com.medical.manager.app.center.web.model.TblCusMedicalRecordsVisit">
+		INSERT INTO tbl_cus_medical_records_visit
+		 		(record_id, visit_cus_id)
+		VALUES	(#{record_id}, #{visit_cus_id})
+	</insert>
+</mapper>

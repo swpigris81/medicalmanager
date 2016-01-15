@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.relatives.web.dao.ITblCusAddressDao">
+	<resultMap type="com.medical.manager.app.relatives.web.model.TblCusAddress" id="TblCusAddressMap">
+		<id column="id" property="id"/>
+		<result column="cus_id" property="cus_id"/>
+        <result column="receiver" property="receiver"/>
+        <result column="phone" property="phone"/>
+        <result column="backup_phone" property="backup_phone"/>
+        <result column="zip_code" property="zip_code"/>
+        <result column="address" property="address"/>
+        <result column="default_flag" property="default_flag"/>
+        <result column="create_time" property="create_time"/>
+        <result column="remark" property="remark"/>
+	</resultMap>
+	
+	<sql id="TblCusAddressColumns">
+		id,cus_id,receiver,phone,backup_phone,
+		zip_code,address,default_flag,create_time,remark
+	</sql>
+	
+	<sql id="TblCusAddressColumns4Insert">
+		cus_id,receiver,phone,backup_phone,
+		zip_code,address,default_flag,create_time,remark
+	</sql>
+	<sql id="TblCusAddressColumns4Values">
+		#{cus_id},#{receiver},#{phone},#{backup_phone},
+		#{zip_code},#{address},#{default_flag},#{create_time},#{remark}
+	</sql>
+	
+	<select id="findById" resultType="com.medical.manager.app.relatives.web.model.TblCusAddress" parameterType="Long">
+		SELECT <include refid="TblCusAddressColumns"/> FROM tbl_cus_address WHERE id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.medical.manager.app.relatives.web.model.TblCusAddress" 
+		useGeneratedKeys="true" keyProperty="id">
+			INSERT INTO tbl_cus_address (<include refid="TblCusAddressColumns4Insert"/>)
+			VALUES (<include refid="TblCusAddressColumns4Values"/>)
+	</insert>
+	
+	<update id="update" parameterType="com.medical.manager.app.relatives.web.model.TblCusAddress">
+		UPDATE tbl_cus_address 
+		<set>
+			<if test="phone != null and phone != ''">				phone			= #{phone,jdbcType=VARCHAR}, </if>
+			<if test="remark != null and remark != ''">				remark 			= #{remark,jdbcType=VARCHAR}, </if>
+			<if test="address != null and address != ''">			address 		= #{address,jdbcType=VARCHAR}, </if>
+			<if test="receiver != null and receiver != ''">			receiver		= #{receiver,jdbcType=VARCHAR}, </if>
+			<if test="zip_code != null and zip_code != ''">			zip_code		= #{zip_code,jdbcType=VARCHAR}, </if>
+			<if test="default_flag != null and default_flag != ''">	default_flag 	= #{default_flag,jdbcType=VARCHAR}, </if>
+			<if test="create_time != null and create_time != ''">	create_time 	= #{create_time,jdbcType=VARCHAR}, </if>
+			<if test="backup_phone != null and backup_phone != ''">	backup_phone	= #{backup_phone,jdbcType=VARCHAR}, </if>
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 查询用户所有收货地址 -->
+	<select id="queryByCusId" parameterType="java.lang.Long" resultMap="TblCusAddressMap">
+		SELECT <include refid="TblCusAddressColumns"/> FROM tbl_cus_address t WHERE t.cus_id = #{cus_id}
+	</select>
+	
+	<delete id="delete" parameterType="java.lang.Long">
+		DELETE FROM tbl_cus_address WHERE id = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 设置某个用户的默认收货地址为非默认收货地址 -->
+	<update id="updateDefaultToNonDefault" parameterType="java.lang.Long">
+		UPDATE tbl_cus_address t
+		SET t.default_flag = 'Y'
+		WHERE
+			t.default_flag = 'N'
+		AND t.cus_id = #{cus_id}
+	</update>
+</mapper>

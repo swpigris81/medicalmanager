@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.stat.web.dao.ICusStatDao">
+
+	<!-- ********************************** 综合统计 START ********************************** -->
+	<!-- 综合统计 -->
+	<select id="queryGeneralStatList" parameterType="java.util.HashMap"
+		resultType="com.medical.manager.stat.web.model.CusGeneralStat">
+			SELECT	CONCAT('CustomType', cbi.cus_type) AS generalStatItemKey,
+					IFNULL(COUNT(0), 0) AS generalStatValue
+			  FROM	tbl_cus_basic_info cbi
+			<where>
+				<if test="statTimeStart != null"><![CDATA[	AND cbi.REGISTER_TIME >= #{statTimeStart}	]]></if>
+				<if test="statTimeEnd != null"><![CDATA[ 	AND cbi.REGISTER_TIME <= #{statTimeEnd}		]]></if>
+			</where>
+			 GROUP	BY cbi.cus_type
+		UNION ALL
+			SELECT	CONCAT('RechargeType', frt.RECHARGE_TYPE) AS generalStatItemKey,
+					IFNULL(SUM(frt.RECHARGE_AMOUNT), 0) AS generalStatValue
+			  FROM	tbl_fund_recharge_turnover frt
+			<where>
+				<if test="statTimeStart != null"><![CDATA[	AND frt.RECHARGE_TIME >= #{statTimeStart}	]]></if>
+				<if test="statTimeEnd != null"><![CDATA[ 	AND frt.RECHARGE_TIME <= #{statTimeEnd}		]]></if>
+			</where>
+			 GROUP 	BY frt.RECHARGE_TYPE
+		UNION ALL
+			SELECT	'WithdrawType00' AS generalStatItemKey,
+					IFNULL(SUM(fwt.WITHDRAW_AMOUNT), 0) AS generalStatValue
+			  FROM 	tbl_fund_withdraw_turnover fwt
+			<where>
+				<if test="statTimeStart != null"><![CDATA[	AND fwt.WITHDRAW_TIME >= #{statTimeStart} 	]]></if>
+				<if test="statTimeEnd != null"><![CDATA[ 	AND fwt.WITHDRAW_TIME <= #{statTimeEnd} 	]]></if>		
+			</where>
+		UNION ALL
+			SELECT	CONCAT('CustomType', cbi.cus_type, cbe.CHECK_STATUS) AS generalStatItemKey,
+				   	IFNULL(COUNT(0), 0) AS generalStatValue
+			FROM   	tbl_cus_basic_info cbi
+			LEFT	JOIN tbl_cus_basic_expand cbe ON cbi.id = cbe.CUS_ID
+			<where>
+				<if test="statTimeStart != null"><![CDATA[	AND cbe.CHECK_TIME >= #{statTimeStart} 	]]></if>
+				<if test="statTimeEnd != null"><![CDATA[ 	AND cbe.CHECK_TIME <= #{statTimeEnd} 	]]></if>		
+				<if test="checkStatus != null"><![CDATA[ 	AND cbe.CHECK_STATUS = #{checkStatus} 	]]></if>		
+			</where>
+			GROUP BY cbi.cus_type
+		UNION ALL
+			SELECT	'Sales00' AS generalStatItemKey,
+					IFNULL(COUNT(0), 0) AS generalStatValue
+			FROM	tbl_order o
+			<where>
+				<if test="statTimeStart != null"><![CDATA[	AND o.ORDER_TIME >= #{statTimeStart}	]]></if>
+				<if test="statTimeEnd != null"><![CDATA[ 	AND o.ORDER_TIME <= #{statTimeEnd}		]]></if>		
+				<if test="checkStatus != null"><![CDATA[ 	AND o.IS_PAY = #{isPay} 	]]></if>		
+			</where>			
+		UNION ALL
+			SELECT	'HardwareOpen00' AS generalStatItemKey,
+					IFNULL(COUNT(0), 0) AS generalStatValue
+			FROM	tbl_cus_device tcd
+			WHERE	tcd.OPEN_FLAG = 'Y'
+					<if test="statTimeStart != null"><![CDATA[	AND tcd.OPEN_TIME >= #{statTimeStart}	]]></if>
+					<if test="statTimeEnd != null"><![CDATA[ 	AND tcd.OPEN_TIME <= #{statTimeEnd}		]]></if>		
+		UNION ALL
+			SELECT	'Recommend00' AS generalStatItemKey,
+					IFNULL(SUM(bseq.change_amount), 0) AS generalStatValue
+			FROM	tbl_fund_balance_seq bseq
+			WHERE	bseq.recommend_flag = 'Y'
+					<if test="statTimeStart != null"><![CDATA[	AND bseq.change_time >= #{statTimeStart}]]></if>
+					<if test="statTimeEnd != null"><![CDATA[ 	AND bseq.change_time <= #{statTimeEnd}	]]></if>		
+	</select>
+	<select id="queryGeneralStatListFromTempTable" resultType="com.medical.manager.stat.web.model.CusGeneralStat">
+		SELECT
+			t.general_stat_item AS generalStatItem,
+			t.general_stat_item_key AS generalStatItemKey,
+			t.general_stat_value AS generalStatValue
+		FROM
+			tbl_stat_general t
+	</select>
+	<select id="updateTblStatGeneral" parameterType="com.medical.manager.stat.web.model.CusGeneralStat">
+		UPDATE tbl_stat_general t
+		SET t.general_stat_value = #{generalStatValue,jdbcType=BIGINT}
+		WHERE
+			t.general_stat_item_key = #{generalStatItemKey,jdbcType=VARCHAR}
+	</select>
+	<!-- ********************************** 综合统计 END   ********************************** -->
+	
+	
+	<!-- ******************************** 辖区报警数据统计 START ******************************** -->
+	<!-- 辖区报警数据实体Map -->
+	<resultMap type="com.medical.manager.stat.web.model.CusStatAreaAlarm" id="StatAreaAlarmMap">
+		<result column="ID" property="id"/>
+		<result column="ALARM_CENTER" property="alarmCenter"/>
+		<result column="ALARM_TIME" property="alarmTime"/>
+		<result column="SCHEDULE_USER" property="scheduleUser"/>
+		<result column="PHONE" property="phone"/>
+		<result column="CALL_DURATION" property="callDuration"/>
+		<result column="SCHEDULE_VEHICLE" property="scheduleVehicle"/>
+		<result column="DISEASE_TYPE" property="diseaseType"/>
+		<result column="HOSPITAL" property="hospital"/>
+		<result column="TRACK_INFO" property="trackInfo"/>
+		<result column="REMARK" property="remark"/>
+	</resultMap>
+	<!-- 辖区报警数据统计/导出查询条件设置 -->
+	<sql id="setQueryParamterOfStatAreaAlarm">
+		<where>
+			<if test="statTimeStart != null"><![CDATA[	AND info.alarm_time >= #{statTimeStart} ]]></if>
+			<if test="statTimeEnd != null"><![CDATA[	AND info.alarm_time <= #{statTimeEnd} ]]></if>
+			<if test="alarmAreaType != null">
+				<choose>
+					<when test="alarmAreaType == '0'">	AND exp120.use_county = #{alarmArea}	</when>
+					<when test="alarmAreaType == '1'">	AND exp120.use_city = #{alarmArea}		</when>
+					<when test="alarmAreaType == '2'">	AND exp120.use_province = #{alarmArea}	</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="queryStatAreaAlarm">
+		SELECT	pinfo.certen_id alarm_center,
+				info.alarm_time alarm_time,
+				pinfo.certen_id schedule_user,
+				info.mobile_no phone,
+				info.talk_time call_duration,
+				info.need_anbulance_num schedule_vehicle,
+		IF ( info.is_specify_hos = '1', info.hospital, expand.unit_name) hospital,
+		 '' disease_type,
+		 '' track_info
+		FROM
+			tbl_alarm_info info
+		LEFT JOIN tbl_alarm_task task ON info.id = task.alarm_id
+		LEFT JOIN tbl_scheduling_info sinfo ON info.id = sinfo.alarm_id
+		LEFT JOIN tbl_center_police_info pinfo ON info.police_id = pinfo.id
+		LEFT JOIN tbl_cus_basic_expand exp120 ON pinfo.certen_id = exp120.cus_id
+		LEFT JOIN tbl_cus_basic_expand expand ON task.ambulance_id = expand.cus_id
+	</sql>
+	
+	<!-- 辖区报警数据统计导出 -->
+	<select id="exportStatAreaAlarm" parameterType="java.util.HashMap" resultMap="StatAreaAlarmMap">
+		<include refid="queryStatAreaAlarm"/>
+		<include refid="setQueryParamterOfStatAreaAlarm"/>
+	</select>
+	<!-- 辖区报警数据统计查询 -->
+	<select id="queryStatAreaAlarmList" parameterType="java.util.HashMap" resultMap="StatAreaAlarmMap">
+		<include refid="queryStatAreaAlarm"/>
+		<include refid="setQueryParamterOfStatAreaAlarm"/>
+	</select>
+	<select id="queryStatAreaAlarmStat" parameterType="java.util.HashMap" resultMap="StatAreaAlarmMap">
+		SELECT
+			'合计:' AS alarmTime,
+			CONCAT('通话时长:',IFNULL(SUM(info.TALK_TIME), 0),'分') AS callDuration,
+			CONCAT('调度车辆:',IFNULL(SUM(info.NEED_ANBULANCE_NUM), 0),'辆') AS scheduleVehicle,
+			CONCAT('报警电话:',IFNULL(COUNT(0), 0),'个') AS phone
+		FROM
+			tbl_alarm_info info
+		LEFT JOIN tbl_center_police_info pinfo ON info.POLICE_ID = pinfo.ID
+		<include refid="setQueryParamterOfStatAreaAlarm"/>
+	</select>
+	<!-- ******************************** 辖区报警数据统计 END   ******************************** -->
+	
+</mapper>

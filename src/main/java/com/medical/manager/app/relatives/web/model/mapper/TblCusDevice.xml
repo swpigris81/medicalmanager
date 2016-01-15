@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.relatives.web.dao.ITblCusDeviceDao">
+	<resultMap type="com.medical.manager.app.relatives.web.model.TblCusDevice" id="TblCusDeviceMap">
+		<id column="id" property="id"/>
+		<result column="device_no" property="device_no"/>
+        <result column="machine_code_id" property="machine_code_id"/>
+        <result column="status" property="status"/>
+        <result column="open_time" property="open_time"/>
+        <result column="use_id" property="use_id"/>
+        <result column="open_id" property="open_id"/>
+        <result column="remark" property="remark"/>
+	</resultMap>
+	
+	<sql id="TblCusDeviceColumns">
+		id,device_no,machine_code_id,status,
+		open_time,use_id,open_id,remark
+	</sql>
+	
+	<sql id="TblCusDeviceColumns4Insert">
+		device_no,	machine_code_id,	status,
+		open_time,	use_id,				open_id,	remark
+	</sql>
+	<sql id="TblCusDeviceColumns4Values">
+		#{device_no},	#{machine_code_id},	#{status},
+		#{open_time},	#{use_id},			#{open_id},	#{remark}
+	</sql>
+	
+	<select id="findById" resultType="com.medical.manager.app.relatives.web.model.TblCusDevice" parameterType="Long">
+		SELECT <include refid="TblCusDeviceColumns"/> FROM tbl_cus_device WHERE id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.medical.manager.app.relatives.web.model.TblCusDevice" 
+		useGeneratedKeys="true" keyProperty="id">
+			INSERT INTO tbl_cus_device (<include refid="TblCusDeviceColumns4Insert"/>)
+			VALUES (<include refid="TblCusDeviceColumns4Values"/>)
+	</insert>
+	
+	<update id="update" parameterType="com.medical.manager.app.relatives.web.model.TblCusDevice">
+		UPDATE tbl_cus_device 
+		<set>
+			<if test="device_no != null and device_no != ''">	device_no 		= #{device_no,jdbcType=VARCHAR}, </if>
+			<if test="machine_code_id != null">					machine_code_id = #{machine_code_id,jdbcType=BIGINT}, </if>
+			<if test="status != null and status != ''">			status 			= #{status,jdbcType=VARCHAR}, </if>
+			<if test="open_time != null and open_time != ''">	open_time 		= #{open_time,jdbcType=VARCHAR}, </if>
+			<if test="use_id != null">							use_id 			= #{use_id,jdbcType=BIGINT}, </if>
+			<if test="open_id != null">							open_id 		= #{open_id,jdbcType=BIGINT}, </if>
+			<if test="remark != null and remark != ''">			remark 			= #{remark,jdbcType=VARCHAR}, </if>
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 查询已开通的设备集合 -->
+	<select id="queryOpenDeviceList" parameterType="java.lang.Long" resultMap="TblCusDeviceMap">
+		SELECT	<include refid="TblCusDeviceColumns"/>
+		FROM	tbl_cus_device tcd
+		WHERE	tcd.open_flag = 'Y'
+		AND 	tcd.use_id = #{use_id}
+	</select>
+	
+	<!-- 根据电话查询设备信息 -->
+	<select id="queryDevicesByPhone" parameterType="String" resultMap="TblCusDeviceMap">
+		SELECT	*
+		FROM	tbl_cus_device d
+		WHERE	d.USE_ID = 
+				(
+					SELECT	i.id
+					FROM	tbl_cus_basic_info i
+					WHERE	i.phone = #{phone} 
+				)	
+	</select>
+</mapper>

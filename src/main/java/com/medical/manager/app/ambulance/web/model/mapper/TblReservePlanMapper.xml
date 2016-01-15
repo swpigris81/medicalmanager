@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.medical.manager.app.ambulance.web.dao.ITblReservePlanDao" >
+  <resultMap id="BaseResultMap" type="com.medical.manager.app.ambulance.web.model.TblReservePlan" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="CUS_ID" property="cusId" jdbcType="BIGINT" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="EDITOR" property="editor" jdbcType="VARCHAR" />
+    <result column="EDIT_TIME" property="editTime" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="CHECK_STATUS" property="checkStatus" jdbcType="VARCHAR" />
+    <result column="CHECK_TIME" property="checkTime" jdbcType="VARCHAR" />
+    <result column="AUDITOR" property="auditor" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ID, CUS_ID, TITLE, EDITOR, EDIT_TIME, CONTENT, CHECK_STATUS, CHECK_TIME, AUDITOR
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.medical.manager.app.ambulance.web.query.TblReservePlanExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_reserve_plan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_reserve_plan
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tbl_reserve_plan
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.medical.manager.app.ambulance.web.model.TblReservePlan" >
+    insert into tbl_reserve_plan (CUS_ID, TITLE, 
+      EDITOR, EDIT_TIME, CONTENT, 
+      CHECK_STATUS, CHECK_TIME, AUDITOR
+      )
+    values (#{cusId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, 
+      #{editor,jdbcType=VARCHAR}, #{editTime,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{checkStatus,jdbcType=VARCHAR}, #{checkTime,jdbcType=VARCHAR}, #{auditor,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.medical.manager.app.ambulance.web.model.TblReservePlan" >
+    insert into tbl_reserve_plan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="cusId != null" >
+        CUS_ID,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="editor != null" >
+        EDITOR,
+      </if>
+      <if test="editTime != null" >
+        EDIT_TIME,
+      </if>
+      <if test="content != null" >
+        CONTENT,
+      </if>
+      <if test="checkStatus != null" >
+        CHECK_STATUS,
+      </if>
+      <if test="checkTime != null" >
+        CHECK_TIME,
+      </if>
+      <if test="auditor != null" >
+        AUDITOR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="cusId != null" >
+        #{cusId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="editor != null" >
+        #{editor,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null" >
+        #{editTime,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="checkStatus != null" >
+        #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        #{checkTime,jdbcType=VARCHAR},
+      </if>
+      <if test="auditor != null" >
+        #{auditor,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.medical.manager.app.ambulance.web.query.TblReservePlanExample" resultType="java.lang.Integer" >
+    select count(*) from tbl_reserve_plan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.medical.manager.app.ambulance.web.model.TblReservePlan" >
+    update tbl_reserve_plan
+    <set >
+      <if test="cusId != null" >
+        CUS_ID = #{cusId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="editor != null" >
+        EDITOR = #{editor,jdbcType=VARCHAR},
+      </if>
+      <if test="editTime != null" >
+        EDIT_TIME = #{editTime,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="checkStatus != null" >
+        CHECK_STATUS = #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        CHECK_TIME = #{checkTime,jdbcType=VARCHAR},
+      </if>
+      <if test="auditor != null" >
+        AUDITOR = #{auditor,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.medical.manager.app.ambulance.web.model.TblReservePlan" >
+    update tbl_reserve_plan
+    set CUS_ID = #{cusId,jdbcType=BIGINT},
+      TITLE = #{title,jdbcType=VARCHAR},
+      EDITOR = #{editor,jdbcType=VARCHAR},
+      EDIT_TIME = #{editTime,jdbcType=VARCHAR},
+      CONTENT = #{content,jdbcType=VARCHAR},
+      CHECK_STATUS = #{checkStatus,jdbcType=VARCHAR},
+      CHECK_TIME = #{checkTime,jdbcType=VARCHAR},
+      AUDITOR = #{auditor,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

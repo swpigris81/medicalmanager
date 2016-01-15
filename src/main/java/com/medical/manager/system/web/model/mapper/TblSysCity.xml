@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.system.web.dao.ISysAdministrativeDao">
+	<resultMap type="com.medical.manager.system.web.model.TblSysCity" id="findSysCityResultMap">
+		<id column="cityid" property="cityid"/>
+		<result column="provinceid" property="provinceid"/>
+		<result column="city" property="city"/>
+        <collection property="areaList" column="cityid" ofType="com.medical.manager.system.web.model.TblSysArea">
+            <id column="areaid" property="areaid"/>
+            <result column="area" property="area"/>
+            <result column="area_cityid" property="cityid"/>
+        </collection>
+	</resultMap>
+	
+	<select id="findCityById" resultType="com.medical.manager.system.web.model.TblSysCity" parameterType="Integer">
+		<![CDATA[
+			select *
+			from TBL_SYS_CITY where cityid = #{cityid}
+		]]>
+	</select>
+	
+	<select id="findCityByProvinceid" resultMap="findSysCityResultMap" parameterType="Integer">
+		<![CDATA[
+			select *
+			from TBL_SYS_CITY where provinceid = #{provinceid}
+		]]>
+	</select>
+	
+	<select id="findCityAndArea" resultMap="findSysCityResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select c.*, a.areaid, a.area, a.cityid area_cityid
+			from TBL_SYS_CITY c 
+            join TBL_SYS_AREA a
+            on(c.cityid = a.cityid)
+		]]>
+	</select>
+</mapper>

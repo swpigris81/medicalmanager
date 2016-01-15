@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.customer.web.dao.ITblCusLoginSeqDao">
+	<resultMap type="com.medical.manager.customer.web.model.TblCusLoginSeq" id="TblCusLoginSeqMap">
+		<result column="ID" property="id"/>
+		<result column="CUS_ID" property="cusId"/>
+		<result column="LOGIN_TIME" property="loginTime"/>
+		<result column="LOGIN_IP" property="loginIp"/>
+		<result column="REMARK" property="remark"/>
+	</resultMap>
+
+	<sql id="allColumnsSql">
+		ID,CUS_ID,LOGIN_TIME,LOGIN_IP,
+		REMARK
+	</sql>
+	
+	<sql id="insertColumnsSql">
+		ID,CUS_ID,LOGIN_TIME,LOGIN_IP,
+		REMARK
+	</sql>
+
+	<sql id="insertSql">
+		#{id,jdbcType=NUMERIC},
+		#{cusId,jdbcType=NUMERIC},
+		#{loginTime,jdbcType=VARCHAR},
+		#{loginIp,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}
+	</sql>
+
+	<sql id="updateSql">
+		<if test="id != null">ID = #{id,jdbcType=NUMERIC},</if>
+		<if test="cusId != null">CUS_ID = #{cusId,jdbcType=NUMERIC},</if>
+		<if test="loginTime != null">LOGIN_TIME = #{loginTime,jdbcType=VARCHAR},</if>
+		<if test="loginIp != null">LOGIN_IP = #{loginIp,jdbcType=VARCHAR},</if>
+		<if test="remark != null">REMARK = #{remark,jdbcType=VARCHAR}</if>
+	</sql>
+	
+	<insert id="addNewCusLoginSeq" parameterType="com.medical.manager.customer.web.model.TblCusLoginSeq">
+		insert into tbl_cus_login_seq(<include refid="insertColumnsSql"></include>)
+		values(<include refid="insertSql"></include>)
+	</insert>
+</mapper>

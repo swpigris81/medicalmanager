@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.propaganda.web.dao.IPropaSiteMessageDao">
+	<resultMap type="com.medical.manager.propaganda.web.model.TblPropaSiteMessage" id="findSiteMessageResultMap">
+		<id column="ID" property="id"/>
+		<result column="TITLE" property="title"/>
+		<result column="SEND_OPER" property="sendOper"/>
+		<result column="RECEIVE_OPER" property="receiveOper"/>
+        <result column="CONTENT" property="content"/>
+        <result column="PROVINCE" property="province"/>
+        <result column="PROVINCE_NAME" property="provinceName"/>
+        <result column="CITY" property="city"/>
+        <result column="CITY_NAME" property="cityName"/>
+        <result column="TYPE" property="type"/>
+        <result column="STATUS" property="status"/>
+        <result column="TYPE_NAME" property="typeName"/>
+		<result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.propaganda.web.model.TblPropaSiteMessage" parameterType="Long">
+		<![CDATA[
+			select 
+				ID id,
+				TITLE title,
+				SEND_OPER sendOper,
+				RECEIVE_OPER receiveOper,
+                CONTENT content,
+                PROVINCE province,
+                PROVINCE_NAME provinceName,
+                CITY city,
+                CITY_NAME cityName,
+                TYPE type,
+                TYPE_NAME typeName,
+				CREATE_OPER createOper,
+				CREATE_DATE createDate,
+				CREATE_TIME createTime,
+				STATUS status
+			from TBL_PROPA_SITE_MESSAGE where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findSiteMessage" resultMap="findSiteMessageResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_PROPA_SITE_MESSAGE
+		]]>
+        <where>
+			<if test="sendOper != null and sendOper != ''">
+                <![CDATA[
+				    and SEND_OPER like CONCAT(CONCAT('%', #{sendOper}), '%')
+                ]]>
+			</if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[
+                    and str_to_date(CREATE_DATE, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[
+                    and str_to_date(CREATE_DATE, '%Y%m%d') <= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="status != null and status != ''">
+            	<![CDATA[
+                    and STATUS = #{status}
+                ]]>
+            </if>
+            <if test="receiveOper != null and receiveOper != ''">
+                <![CDATA[
+                    and RECEIVE_OPER = #{receiveOper}
+                ]]>
+            </if>
+            <if test="province != null and province != ''">
+                <![CDATA[
+                    and PROVINCE = #{province}
+                ]]>
+            </if>
+            <if test="city != null and city != ''">
+                <![CDATA[
+                    and CITY = #{city}
+                ]]>
+            </if>
+        </where>
+        union 
+        <![CDATA[
+            select *
+            from TBL_PROPA_SITE_MESSAGE
+        ]]>
+        <where>
+            <if test="sendOper != null and sendOper != ''">
+                <![CDATA[
+                    and SEND_OPER like CONCAT(CONCAT('%', #{sendOper}), '%')
+                ]]>
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[
+                    and str_to_date(CREATE_DATE, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[
+                    and str_to_date(CREATE_DATE, '%Y%m%d') <= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="status != null and status != ''">
+                <![CDATA[
+                    and STATUS = #{status}
+                ]]>
+            </if>
+            <if test="province != null and province != ''">
+                <![CDATA[
+                    and PROVINCE = #{province}
+                ]]>
+            </if>
+            <if test="city != null and city != ''">
+                <![CDATA[
+                    and CITY = #{city}
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by CREATE_DATE desc, CREATE_TIME desc
+        ]]>
+	</select>
+	
+	<insert id="addNewSiteMessage" parameterType="com.medical.manager.propaganda.web.model.TblPropaSiteMessage">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_PROPA_SITE_MESSAGE(TITLE, SEND_OPER, RECEIVE_OPER, CONTENT,
+                PROVINCE, PROVINCE_NAME, CITY, CITY_NAME, TYPE, TYPE_NAME,
+				CREATE_OPER, CREATE_DATE, CREATE_TIME, STATUS)
+			values(#{title}, #{sendOper}, #{receiveOper}, #{content},
+                #{province}, #{provinceName}, #{city}, #{cityName}, #{type}, #{typeName},
+				#{createOper}, #{createDate}, #{createTime}, #{status})
+		]]>
+	</insert>
+    
+    <update id="updateSiteMessage" parameterType="com.medical.manager.propaganda.web.model.TblPropaSiteMessage">
+        <![CDATA[
+            update TBL_PROPA_SITE_MESSAGE
+        ]]>
+        <set>
+            <if test="title != null">
+                TITLE = #{title},
+            </if>
+            <if test="sendOper != null">
+                SEND_OPER = #{sendOper},
+            </if>
+            <if test="receiveOper != null">
+                RECEIVE_OPER = #{receiveOper},
+            </if>
+            <if test="content != null">
+                CONTENT = #{content}, 
+            </if>
+            <if test="province != null">
+                PROVINCE = #{province}, 
+            </if>
+            <if test="provinceName != null">
+                PROVINCE_NAME = #{provinceName}, 
+            </if>
+            <if test="city != null">
+                CITY = #{city}, 
+            </if>
+            <if test="cityName != null">
+                CITY_NAME = #{cityName}, 
+            </if>
+            <if test="type != null">
+                TYPE = #{type}, 
+            </if>
+            <if test="typeName != null">
+                TYPE_NAME = #{typeName}, 
+            </if>
+            <if test="status != null and status != ''">
+                STATUS = #{status}
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                ID = #{id}
+            </if>
+        </where>
+    </update>
+    
+    <delete id="deleteSiteMessage" parameterType="java.util.List">
+        <![CDATA[
+            delete from TBL_PROPA_SITE_MESSAGE where ID in
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+    </delete>
+</mapper>

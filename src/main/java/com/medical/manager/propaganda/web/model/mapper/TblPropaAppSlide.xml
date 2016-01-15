@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.propaganda.web.dao.IPropaAppSlideDao">
+	<resultMap type="com.medical.manager.propaganda.web.model.TblPropaAppSlide" id="findAppSlideResultMap">
+		<id column="ID" property="id"/>
+		<result column="IMAGE_URL" property="imageUrl"/>
+		<result column="IMAGE_LOCATION" property="imageLocation"/>
+		<result column="TYPE" property="type"/>
+        <result column="USER_TYPE" property="userType"/>
+		<result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.propaganda.web.model.TblPropaAppSlide" parameterType="Long">
+		<![CDATA[
+			select 
+				ID id,
+				IMAGE_URL imageUrl,
+				IMAGE_LOCATION imageLocation,
+				TYPE type,
+                USER_TYPE userType,
+				CREATE_OPER createOper,
+				CREATE_DATE createDate,
+				CREATE_TIME createTime
+			from TBL_PROPA_APP_SLIDE where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findAppSlide" resultMap="findAppSlideResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_PROPA_APP_SLIDE
+		]]>
+        <where>
+            <if test="type != null and type != ''">
+                <![CDATA[
+				    TYPE = #{type}
+                ]]>
+			</if>
+            <if test="userType != null and userType != ''">
+                <![CDATA[
+                    and USER_TYPE = #{userType}
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by CREATE_DATE desc, CREATE_TIME desc
+        ]]>
+	</select>
+	
+	<select id="findAppSlideByIds" resultMap="findAppSlideResultMap" parameterType="java.util.List">
+		<![CDATA[
+			select *
+			from TBL_PROPA_APP_SLIDE where ID in
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+	</select>
+	
+	<insert id="addNewAppSlide" parameterType="com.medical.manager.propaganda.web.model.TblPropaAppSlide">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_PROPA_APP_SLIDE(IMAGE_URL, IMAGE_LOCATION, TYPE, USER_TYPE,
+				CREATE_OPER, CREATE_DATE, CREATE_TIME)
+			values(#{imageUrl}, #{imageLocation}, #{type}, #{userType},
+				#{createOper}, #{createDate}, #{createTime})
+		]]>
+	</insert>
+    
+    <update id="updateAppSlide" parameterType="com.medical.manager.propaganda.web.model.TblPropaAppSlide">
+        <![CDATA[
+            update TBL_PROPA_APP_SLIDE
+        ]]>
+        <set>
+            <if test="imageUrl != null">
+                IMAGE_URL = #{imageUrl},
+            </if>
+            <if test="imageLocation != null">
+                IMAGE_LOCATION = #{imageLocation},
+            </if>
+            <if test="type != null">
+                TYPE = #{type},
+            </if>
+            <if test="userType != null">
+                USER_TYPE = #{userType}, 
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                ID = #{id}
+            </if>
+        </where>
+    </update>
+    
+    <delete id="deleteAppSlide" parameterType="java.util.List">
+        <![CDATA[
+            delete from TBL_PROPA_APP_SLIDE where ID in
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+    </delete>
+</mapper>

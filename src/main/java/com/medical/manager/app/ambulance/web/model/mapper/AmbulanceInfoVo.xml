@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.medical.manager.app.ambulance.web.dao.IAmbulanceInfoVoDao">
+	<resultMap id="AmbulanceInfoVoMap"
+		type="com.medical.manager.app.ambulance.web.vo.AmbulanceInfoVo">
+		<result column="cus_id" property="cusId" />
+		<result column="unit_name" property="unitName" />
+		<result column="id_card_no" property="idCardNo" />
+		<result column="task_status" property="taskStatus" />
+		<result column="evaluate_star" property="evaluateStar" />
+		<result column="binding_phone" property="bindingPhone" />
+		<result column="fix_telephone" property="fixTelephone" />
+	</resultMap>
+	
+	<!-- 这里是根据急救车id查询 -->
+	<select id="queryNearAmbulanceByCusId" resultType="com.medical.manager.app.ambulance.web.vo.AmbulanceInfoVo"
+		parameterType="java.util.Map">
+			SELECT	cbi.id_card_no		idCardNo,
+					cbi.longitude		longitude,
+					cbi.latitude		latitude,			
+					cbi.id 				cusId,
+					ei.evaluate_star	evaluateStar,
+					cbe.unit_name		unitName,
+					cbe.binding_phone	bindingPhone,
+					cbe.fix_telephone	fixTelephone,
+					task.task_status	taskStatus
+			FROM	tbl_cus_basic_info cbi
+			LEFT JOIN (
+				SELECT	cust_id, ROUND(AVG(evaluate_star)) evaluate_star
+				FROM	tbl_evaluate_info
+				WHERE	cust_id = #{cusId}
+				GROUP BY	cust_id
+			) ei ON cbi.id = ei.cust_id
+			LEFT JOIN tbl_cus_basic_expand cbe ON cbi.id = cbe.cus_id
+			LEFT JOIN tbl_alarm_task task ON cbi.ID = task.AMBULANCE_ID
+			WHERE	cbi.id = #{cusId}
+	</select>
+	
+	<!-- 查询所有急救车 -->
+	<select id="queryNearAmbulance" resultType="com.medical.manager.app.ambulance.web.vo.AmbulanceInfoVo"
+		parameterType="java.util.Map">
+			SELECT	cbi.id_card_no		idCardNo,
+					cbi.longitude		longitude,
+					cbi.latitude		latitude,			
+					cbi.id 				cusId,
+					ei.evaluate_star	evaluateStar,
+					cbe.unit_name		unitName,
+					cbe.binding_phone	bindingPhone,
+					cbe.fix_telephone	fixTelephone,
+					task.task_status	taskStatus
+			FROM	tbl_cus_basic_info cbi
+			LEFT JOIN (
+				SELECT	cust_id, ROUND(AVG(evaluate_star)) evaluate_star
+				FROM	tbl_evaluate_info
+				GROUP BY	cust_id
+			) ei ON cbi.id = ei.cust_id
+			LEFT JOIN tbl_cus_basic_expand cbe ON cbi.id = cbe.cus_id
+			LEFT JOIN tbl_alarm_task task ON cbi.ID = task.AMBULANCE_ID
+			WHERE	cbi.id = '03'
+	</select>
+</mapper>

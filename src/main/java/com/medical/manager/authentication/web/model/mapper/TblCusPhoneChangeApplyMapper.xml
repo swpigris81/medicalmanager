@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.medical.manager.authentication.web.dao.ITblCusPhoneChangeApplyDao" >
+  <resultMap id="BaseResultMap" type="com.medical.manager.authentication.web.model.TblCusPhoneChangeApply" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="USER_ID" property="userId" jdbcType="BIGINT" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="REAL_NAME" property="realName" jdbcType="VARCHAR" />
+    <result column="ORIGINAL_PHONE" property="originalPhone" jdbcType="VARCHAR" />
+    <result column="NEW_PHONE" property="newPhone" jdbcType="VARCHAR" />
+    <result column="RECHARGE_AMOUNT" property="rechargeAmount" jdbcType="DECIMAL" />
+    <result column="APPLY_TIME" property="applyTime" jdbcType="VARCHAR" />
+    <result column="CHECK_TIME" property="checkTime" jdbcType="VARCHAR" />
+    <result column="APPLY_STATUS" property="applyStatus" jdbcType="VARCHAR" />
+    <result column="APPLY_REASON" property="applyReason" jdbcType="VARCHAR" />
+    <result column="AUDIT" property="audit" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ID, USER_ID, USER_NAME, REAL_NAME, ORIGINAL_PHONE, NEW_PHONE, RECHARGE_AMOUNT, APPLY_TIME, CHECK_TIME,AUDIT,
+    APPLY_STATUS, APPLY_REASON
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.medical.manager.authentication.web.query.TblCusPhoneChangeApplyExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_cus_phone_change_apply
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="queryPhoneChangeApplyList" parameterType="map" resultMap="BaseResultMap">
+  	select 
+  	*
+    from tbl_cus_phone_change_apply where 1=1
+    <if test="beginDate!=null and beginDate!=''">
+    	and begin_date>=#{beginDate}
+    </if>
+    <if test="endDate!=null and endDate!=''">
+    	<![CDATA[and end_date<=#{endDate}]]>
+    </if>
+    <if test="phoneNumber!=null and phoneNumber!=''">
+    	and original_phone=#{phoneNumber}
+    </if>
+     <if test="checkStatus!=null and checkStatus!=''">
+    	and apply_status=#{checkStatus}
+    </if>
+    order by apply_Time desc
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_cus_phone_change_apply
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tbl_cus_phone_change_apply
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.medical.manager.authentication.web.query.TblCusPhoneChangeApplyExample" >
+    delete from tbl_cus_phone_change_apply
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.medical.manager.authentication.web.model.TblCusPhoneChangeApply" >
+    insert into tbl_cus_phone_change_apply (ID, USER_ID, USER_NAME, 
+      REAL_NAME, ORIGINAL_PHONE, NEW_PHONE, 
+      RECHARGE_AMOUNT, APPLY_TIME, APPLY_STATUS, 
+      APPLY_REASON,CHECK_TIME,AUDIT)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, 
+      #{realName,jdbcType=VARCHAR}, #{originalPhone,jdbcType=VARCHAR}, #{newPhone,jdbcType=VARCHAR}, 
+      #{rechargeAmount,jdbcType=DECIMAL}, #{applyTime,jdbcType=VARCHAR}, #{applyStatus,jdbcType=VARCHAR}, 
+      #{applyReason,jdbcType=VARCHAR},#{checkTime},#{audit})
+  </insert>
+  <insert id="insertSelective" parameterType="com.medical.manager.authentication.web.model.TblCusPhoneChangeApply" >
+    insert into tbl_cus_phone_change_apply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="userName != null" >
+        USER_NAME,
+      </if>
+      <if test="realName != null" >
+        REAL_NAME,
+      </if>
+      <if test="originalPhone != null" >
+        ORIGINAL_PHONE,
+      </if>
+      <if test="newPhone != null" >
+        NEW_PHONE,
+      </if>
+      <if test="rechargeAmount != null" >
+        RECHARGE_AMOUNT,
+      </if>
+      <if test="applyTime != null" >
+        APPLY_TIME,
+      </if>
+      <if test="applyStatus != null" >
+        APPLY_STATUS,
+      </if>
+      <if test="applyReason != null" >
+        APPLY_REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="originalPhone != null" >
+        #{originalPhone,jdbcType=INTEGER},
+      </if>
+      <if test="newPhone != null" >
+        #{newPhone,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeAmount != null" >
+        #{rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="applyTime != null" >
+        #{applyTime,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="applyReason != null" >
+        #{applyReason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.medical.manager.authentication.web.query.TblCusPhoneChangeApplyExample" resultType="java.lang.Integer" >
+    select count(*) from tbl_cus_phone_change_apply
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <select id="queryphoneChangeCheck" resultType="java.lang.Integer">
+  	select count(*) from tbl_cus_phone_change_apply where apply_status='00'
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tbl_cus_phone_change_apply
+    <set >
+      <if test="record.id != null" >
+        ID = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null" >
+        USER_ID = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.userName != null" >
+        USER_NAME = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.realName != null" >
+        REAL_NAME = #{record.realName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.originalPhone != null" >
+        ORIGINAL_PHONE = #{record.originalPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.newPhone != null" >
+        NEW_PHONE = #{record.newPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rechargeAmount != null" >
+        RECHARGE_AMOUNT = #{record.rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.applyTime != null" >
+        APPLY_TIME = #{record.applyTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyStatus != null" >
+        APPLY_STATUS = #{record.applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyReason != null" >
+        APPLY_REASON = #{record.applyReason,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checkTime != null" >
+        CHECK_TIME = #{record.checkTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tbl_cus_phone_change_apply
+    set ID = #{record.id,jdbcType=BIGINT},
+      USER_ID = #{record.userId,jdbcType=BIGINT},
+      USER_NAME = #{record.userName,jdbcType=VARCHAR},
+      REAL_NAME = #{record.realName,jdbcType=VARCHAR},
+      ORIGINAL_PHONE = #{record.originalPhone,jdbcType=VARCHAR},
+      NEW_PHONE = #{record.newPhone,jdbcType=VARCHAR},
+      RECHARGE_AMOUNT = #{record.rechargeAmount,jdbcType=DECIMAL},
+      APPLY_TIME = #{record.applyTime,jdbcType=VARCHAR},
+      APPLY_STATUS = #{record.applyStatus,jdbcType=VARCHAR},
+      APPLY_REASON = #{record.applyReason,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.medical.manager.authentication.web.model.TblCusPhoneChangeApply" >
+    update tbl_cus_phone_change_apply
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null" >
+        USER_NAME = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        REAL_NAME = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="originalPhone != null" >
+        ORIGINAL_PHONE = #{originalPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="newPhone != null" >
+        NEW_PHONE = #{newPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeAmount != null" >
+        RECHARGE_AMOUNT = #{rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="applyTime != null" >
+        APPLY_TIME = #{applyTime,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        APPLY_STATUS = #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="applyReason != null" >
+        APPLY_REASON = #{applyReason,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        CHECK_TIME = #{checkTime,jdbcType=VARCHAR},
+      </if>
+      <if test="audit != null" >
+        AUDIT = #{audit,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.medical.manager.authentication.web.model.TblCusPhoneChangeApply" >
+    update tbl_cus_phone_change_apply
+    set USER_ID = #{userId,jdbcType=BIGINT},
+      USER_NAME = #{userName,jdbcType=VARCHAR},
+      REAL_NAME = #{realName,jdbcType=VARCHAR},
+      ORIGINAL_PHONE = #{originalPhone,jdbcType=VARCHAR},
+      NEW_PHONE = #{newPhone,jdbcType=VARCHAR},
+      RECHARGE_AMOUNT = #{rechargeAmount,jdbcType=DECIMAL},
+      APPLY_TIME = #{applyTime,jdbcType=VARCHAR},
+      APPLY_STATUS = #{applyStatus,jdbcType=VARCHAR},
+      APPLY_REASON = #{applyReason,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

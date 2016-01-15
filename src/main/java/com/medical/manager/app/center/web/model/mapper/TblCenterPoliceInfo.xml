@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.center.web.dao.TblCenterPoliceInfoDao">
+	<resultMap type="com.medical.manager.app.center.web.model.TblCenterPoliceInfo" id="findCenterPoliceResultMap">
+		<id column="ID" property="id"/>
+		<result column="NAME" property="name"/>
+		<result column="WORK_NO" property="workNo"/>
+		<result column="MOBILE_NO" property="mobileNo"/>
+		<result column="PASSWORD" property="password"/>
+		<result column="CERTEN_ID" property="certenId"/>
+		<result column="USER_TYPE" property="userType"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.app.center.web.model.TblCenterPoliceInfo" parameterType="Long">
+		<![CDATA[
+			select 
+				ID id,
+				NAME name,
+				WORK_NO workNo,
+				MOBILE_NO mobileNo,
+				PASSWORD password,
+				CERTEN_ID certenId,
+				USER_TYPE userType
+			from TBL_CENTER_POLICE_INFO where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findByMobileNo" resultType="com.medical.manager.app.center.web.model.TblCenterPoliceInfo" parameterType="String">
+		<![CDATA[
+			select 
+				ID id,
+				NAME name,
+				WORK_NO workNo,
+				MOBILE_NO mobileNo,
+				PASSWORD password,
+				CERTEN_ID certenId,
+				USER_TYPE userType
+			from TBL_CENTER_POLICE_INFO where MOBILE_NO = #{mobileNo}
+		]]>
+	</select>
+	
+	<select id="findPoliceLogin" resultMap="findCenterPoliceResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_CENTER_POLICE_INFO where 1=1
+		]]>
+		<if test="certenId != null and certenId != ''">
+			<![CDATA[
+				and CERTEN_ID = #{certenId}
+			]]>
+		</if>
+		<if test="mobileNo != null and mobileNo != ''">
+			<![CDATA[
+				and MOBILE_NO = #{mobileNo}
+			]]>
+		</if>
+		<if test="password != null and password != ''">
+			<![CDATA[
+				and PASSWORD = #{password}
+			]]>
+		</if>
+	</select>
+	
+	<insert id="addNewCenterPoliceInfo" parameterType="com.medical.manager.app.center.web.model.TblCenterPoliceInfo" 
+		useGeneratedKeys="true" keyProperty="id">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_CENTER_POLICE_INFO(NAME, WORK_NO, MOBILE_NO,
+				PASSWORD, CERTEN_ID, USER_TYPE)
+			values(#{name}, #{workNo}, #{mobileNo},
+				#{password}, #{certenId}, #{userType})
+		]]>
+	</insert>
+	
+	<update id="updatePolice" parameterType="com.medical.manager.app.center.web.model.TblCenterPoliceInfo">
+		<![CDATA[
+			update TBL_CENTER_POLICE_INFO 
+		]]>
+		<set>
+			<if test="password != null and password != ''">
+				<![CDATA[
+					PASSWORD = #{password},
+				]]>
+			</if>
+			<if test="workNo != null and workNo != ''">
+				<![CDATA[
+					WORK_NO = #{workNo},
+				]]>
+			</if>
+			<if test="certenId != null and certenId != ''">
+				<![CDATA[
+					CERTEN_ID = #{certenId}
+				]]>
+			</if>
+		</set>
+		<where>
+			<![CDATA[
+				MOBILE_NO = #{mobileNo}
+			]]>
+		</where>
+	</update>
+</mapper>

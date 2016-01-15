@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.medical.manager.authentication.web.dao.ITblCusBasicExpandDao" >
+  <resultMap id="BaseResultMap" type="com.medical.manager.authentication.web.model.TblCusBasicExpand" >
+  	<id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="CUS_ID" property="cusId" jdbcType="BIGINT" />
+    <result column="UNIT_NAME" property="unitName" jdbcType="VARCHAR" />
+    <result column="UNIT_ADDRESS" property="unitAddress" jdbcType="VARCHAR" />
+    <result column="TOLL_LEVEL" property="tollLevel" jdbcType="VARCHAR" />
+    <result column="TECHNICAL_PERSON" property="technicalPerson" jdbcType="VARCHAR" />
+    <result column="CHECK_STATUS" property="checkStatus" jdbcType="VARCHAR" />
+    <result column="CHECK_TIME" property="checkTime" jdbcType="VARCHAR" />
+    <result column="AUDIT" property="audit" jdbcType="VARCHAR" />
+    <result column="AUTHENTICATION_AMOUNT" property="authenticationAmount" jdbcType="DECIMAL" />
+    <result column="USE_PROVINCE" property="useProvince" jdbcType="VARCHAR" />
+    <result column="USE_CITY" property="useCity" jdbcType="VARCHAR" />
+    <result column="USE_COUNTY" property="useCounty" jdbcType="VARCHAR" />
+    <result column="BINDING_PHONE" property="bindingPhone" jdbcType="VARCHAR" />
+    <result column="FIX_TELEPHONE" property="fixTelephone" jdbcType="VARCHAR" />
+    <result column="LEGAL_PERSON_CERTIFICATE" property="legalPersonCertificate"/>
+    <result column="ORGANIZATION_CERTIFICATE" property="organizationCertificate"/>
+    <result column="ACCOUNT_NAME" property="accountName"/>
+    <result column="BANK_NAME" property="bankName"/>
+    <result column="BANK_BRANCH" property="bankBranch"/>
+    <result column="ACCOUNT_NO" property="accountNo"/>
+    <result column="SUBMIT_CUST_ID" property="submitCustId"/>
+    <result column="SUBMIT_CUST_NAME" property="submitCustName"/>
+    <result column="SUBMIT_CUST_MOBILE" property="submitCustMobile"/>
+    <result column="SUBMIT_TIME" property="submiTime"/>
+    
+    <association property="cusBasicInfo" javaType="com.medical.manager.customer.web.model.CusBasicInfo">
+    	<id column="ID" property="id" jdbcType="BIGINT" />
+	    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+	    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+	    <result column="phone" property="phone" jdbcType="VARCHAR" />
+	    <result column="id_card_no" property="idCardNo" jdbcType="VARCHAR" />
+	    <result column="cus_type" property="cusType" jdbcType="VARCHAR" />
+	    <result column="province" property="province" jdbcType="VARCHAR" />
+	    <result column="city" property="city" jdbcType="VARCHAR" />
+	    <result column="county" property="county" jdbcType="VARCHAR" />
+	    <result column="register_time" property="registerTime" jdbcType="DATE" />
+	    <result column="service_expire_time" property="serviceExpireTime" jdbcType="DATE" />
+	    <result column="credit_score" property="creditScore" jdbcType="BIGINT" />
+	    <result column="last_login_ip" property="lastLoginIp" jdbcType="VARCHAR" />
+	    <result column="last_login_time" property="lastLoginTime" jdbcType="DATE" />
+	    <result column="activation_flag" property="activationFlag" jdbcType="VARCHAR" />
+	    <result column="activation_time" property="activationTime" jdbcType="DATE" />
+	    <result column="activation_user" property="activationUser" jdbcType="VARCHAR" />
+	    <result column="lock_flag" property="lockFlag" jdbcType="VARCHAR" />
+	    <result column="lock_time" property="lockTime" jdbcType="DATE" />
+	    <result column="lock_user" property="lockUser" jdbcType="VARCHAR" />
+	    <result column="remark" property="remark" jdbcType="VARCHAR" />
+	    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	    <result column="update_time" property="updateTime" jdbcType="DATE" />
+    </association>
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    CUS_ID, UNIT_NAME, UNIT_ADDRESS, TOLL_LEVEL, TECHNICAL_PERSON, CHECK_STATUS, CHECK_TIME, 
+    AUDIT, AUTHENTICATION_AMOUNT
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.medical.manager.authentication.web.query.TblCusBasicExpandExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_cus_basic_expand
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="queryCusBasicExpandList" resultMap="BaseResultMap" parameterType="map">
+  	select i.*,e.* from tbl_cus_basic_info i left join tbl_cus_basic_expand e on  i.id=e.cus_id where 1=1
+  	<if test="beginDate!=null and beginDate!=''">
+  		and i.register_time>=#{beginDate}
+  	</if>
+  	<if test="endDate!=null and endDate!=''">
+  		<![CDATA[and i.register_time<=#{beginDate}]]>
+  	</if>
+  	<if test="phoneNumber!=null and phoneNumber!=''">
+  		and i.phone=#{phoneNumber}
+  	</if>
+  	<if test="realName!=null and realName!=''">
+  		and i.real_name=#{realName}
+  	</if>
+  	<if test="checkStatus!=null and checkStatus!=''">
+  		and check_status=#{checkStatus}
+  	</if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.medical.manager.authentication.web.query.TblCusBasicExpandExample" >
+    delete from tbl_cus_basic_expand
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.medical.manager.authentication.web.model.TblCusBasicExpand" >
+    insert into tbl_cus_basic_expand (CUS_ID, UNIT_NAME, UNIT_ADDRESS, 
+      TOLL_LEVEL, TECHNICAL_PERSON, CHECK_STATUS, 
+      CHECK_TIME, AUDIT, AUTHENTICATION_AMOUNT,USE_PROVINCE,USE_CITY,USE_COUNTY,BINDING_PHONE,
+      FIX_TELEPHONE, LEGAL_PERSON_CERTIFICATE, ORGANIZATION_CERTIFICATE, ACCOUNT_NAME,
+      BANK_NAME, BANK_BRANCH, ACCOUNT_NO, SUBMIT_CUST_ID, SUBMIT_CUST_NAME,
+      SUBMIT_CUST_MOBILE, SUBMIT_TIME
+      )
+    values (#{cusId,jdbcType=BIGINT}, #{unitName,jdbcType=VARCHAR}, #{unitAddress,jdbcType=VARCHAR}, 
+      #{tollLevel,jdbcType=VARCHAR}, #{technicalPerson,jdbcType=VARCHAR}, #{checkStatus,jdbcType=VARCHAR}, 
+      #{checkTime,jdbcType=VARCHAR}, #{audit,jdbcType=VARCHAR}, #{authenticationAmount,jdbcType=DECIMAL},
+      #{useProvince,jdbcType=VARCHAR},#{useCity,jdbcType=VARCHAR},#{useCounty,jdbcType=VARCHAR},#{bindingPhone,jdbcType=VARCHAR},
+      #{fixTelephone,jdbcType=VARCHAR},#{legalPersonCertificate,jdbcType=VARCHAR},#{organizationCertificate,jdbcType=VARCHAR},
+      #{accountName,jdbcType=VARCHAR},
+      #{bankName,jdbcType=VARCHAR},#{bankBranch,jdbcType=VARCHAR},#{accountNo,jdbcType=VARCHAR},#{submitCustId,jdbcType=BIGINT},
+      #{submitCustName,jdbcType=VARCHAR},#{submitCustMobile,jdbcType=VARCHAR},#{submiTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.medical.manager.authentication.web.model.TblCusBasicExpand" >
+    insert into tbl_cus_basic_expand
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cusId != null" >
+        CUS_ID,
+      </if>
+      <if test="unitName != null" >
+        UNIT_NAME,
+      </if>
+      <if test="unitAddress != null" >
+        UNIT_ADDRESS,
+      </if>
+      <if test="tollLevel != null" >
+        TOLL_LEVEL,
+      </if>
+      <if test="technicalPerson != null" >
+        TECHNICAL_PERSON,
+      </if>
+      <if test="checkStatus != null" >
+        CHECK_STATUS,
+      </if>
+      <if test="checkTime != null" >
+        CHECK_TIME,
+      </if>
+      <if test="audit != null" >
+        AUDIT,
+      </if>
+      <if test="authenticationAmount != null" >
+        AUTHENTICATION_AMOUNT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+    	<if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="cusId != null" >
+        #{cusId,jdbcType=BIGINT},
+      </if>
+      <if test="unitName != null" >
+        #{unitName,jdbcType=VARCHAR},
+      </if>
+      <if test="unitAddress != null" >
+        #{unitAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="tollLevel != null" >
+        #{tollLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="technicalPerson != null" >
+        #{technicalPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="checkStatus != null" >
+        #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        #{checkTime,jdbcType=VARCHAR},
+      </if>
+      <if test="audit != null" >
+        #{audit,jdbcType=VARCHAR},
+      </if>
+      <if test="authenticationAmount != null" >
+        #{authenticationAmount,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.medical.manager.authentication.web.query.TblCusBasicExpandExample" resultType="java.lang.Integer" >
+    select count(*) from tbl_cus_basic_expand
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update tbl_cus_basic_expand
+    <set >
+      <if test="record.cusId != null" >
+        CUS_ID = #{record.cusId,jdbcType=BIGINT},
+      </if>
+      <if test="record.unitName != null" >
+        UNIT_NAME = #{record.unitName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.unitAddress != null" >
+        UNIT_ADDRESS = #{record.unitAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tollLevel != null" >
+        TOLL_LEVEL = #{record.tollLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.technicalPerson != null" >
+        TECHNICAL_PERSON = #{record.technicalPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checkStatus != null" >
+        CHECK_STATUS = #{record.checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checkTime != null" >
+        CHECK_TIME = #{record.checkTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.audit != null" >
+        AUDIT = #{record.audit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.authenticationAmount != null" >
+        AUTHENTICATION_AMOUNT = #{record.authenticationAmount,jdbcType=DECIMAL},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByKeySelective" parameterType="com.medical.manager.authentication.web.model.TblCusBasicExpand" >
+    update tbl_cus_basic_expand
+    <set >
+      <if test="record.unitName != null" >
+        UNIT_NAME = #{record.unitName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.unitAddress != null" >
+        UNIT_ADDRESS = #{record.unitAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tollLevel != null" >
+        TOLL_LEVEL = #{record.tollLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.technicalPerson != null" >
+        TECHNICAL_PERSON = #{record.technicalPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checkStatus != null" >
+        CHECK_STATUS = #{record.checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checkTime != null" >
+        CHECK_TIME = #{record.checkTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.audit != null" >
+        AUDIT = #{record.audit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.authenticationAmount != null" >
+        AUTHENTICATION_AMOUNT = #{record.authenticationAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.useProvince != null" >
+        USE_PROVINCE = #{record.useProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="record.useCity != null" >
+        USE_CITY = #{record.useCity,jdbcType=VARCHAR},
+      </if>
+      <if test="record.useCounty != null" >
+        USE_COUNTY = #{record.useCounty,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bindingPhone != null" >
+        BINDING_PHONE = #{record.bindingPhone,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CUS_ID = #{record.cusId,jdbcType=BIGINT}
+  </update>
+  <update id="checkCusBasicExpand" parameterType="com.medical.manager.authentication.web.model.TblCusBasicExpand">
+  	update tbl_cus_basic_expand set 
+  	CHECK_STATUS = #{checkStatus,jdbcType=VARCHAR},
+      CHECK_TIME = #{checkTime,jdbcType=VARCHAR},
+      AUDIT = #{audit,jdbcType=VARCHAR}
+      where CUS_ID=#{cusId}
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update tbl_cus_basic_expand
+    set 
+      UNIT_NAME = #{record.unitName,jdbcType=VARCHAR},
+      UNIT_ADDRESS = #{record.unitAddress,jdbcType=VARCHAR},
+      TOLL_LEVEL = #{record.tollLevel,jdbcType=VARCHAR},
+      TECHNICAL_PERSON = #{record.technicalPerson,jdbcType=VARCHAR},
+      CHECK_STATUS = #{record.checkStatus,jdbcType=VARCHAR},
+      CHECK_TIME = #{record.checkTime,jdbcType=VARCHAR},
+      AUDIT = #{record.audit,jdbcType=VARCHAR},
+      AUTHENTICATION_AMOUNT = #{record.authenticationAmount,jdbcType=DECIMAL}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  
+	<delete id="delete" parameterType="java.lang.Long">
+		DELETE FROM tbl_cus_basic_expand WHERE cus_id = #{cusId}
+	</delete>
+    <select id="selectByCustId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from tbl_cus_basic_expand
+        where CUS_ID=#{cusId}
+    </select>
+    
+    <!-- add at 2015-12-23 16:51 START -->
+	<sql id="basePartColumns" >
+		ID,CUS_ID, UNIT_NAME, UNIT_ADDRESS, TOLL_LEVEL, TECHNICAL_PERSON, CHECK_STATUS, CHECK_TIME, 
+		AUDIT, AUTHENTICATION_AMOUNT,USE_PROVINCE,USE_CITY,USE_COUNTY
+	</sql>
+    <select id="selectById" parameterType="String"
+    	resultType="com.medical.manager.authentication.web.model.TblCusBasicExpand">
+        select	<include refid="basePartColumns" />
+        from	tbl_cus_basic_expand
+        where	id = #{id}
+    </select>
+    <!-- add at 2015-12-23 16:51  END  -->
+</mapper>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.funds.web.dao.ITblWithdrawTurnoverDao">
+	<resultMap type="com.medical.manager.funds.web.model.TblWithdrawTurnover" id="findWithdrawTurnoverResultMap">
+		<id column="ID" property="id"/>
+		<result column="CUST_ID" property="custId"/>
+		<result column="CUST_NAME" property="custName"/>
+		<result column="CUST_MOBILE" property="custMobile"/>
+		<result column="NAME" property="name"/>
+        <result column="WITHDRAW_ACCOUNT" property="withdrawAccount"/>
+        <result column="WITHDRAW_BANK" property="withdrawBank"/>
+        <result column="BRANCH_BANK" property="branchBank"/>
+        <result column="WITHDRAW_AMOUNT" property="withdrawAmount"/>
+        <result column="WITHDRAW_TIME" property="withdrawTime"/>
+        <result column="WITHDRAW_STATUS" property="withdrawStatus"/>
+        <result column="ACCOUNT_ID" property="accountId"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.funds.web.model.TblWithdrawTurnover" parameterType="Long">
+		<![CDATA[
+			select 
+				ID id,
+				CUST_ID custId,
+				CUST_NAME custName,
+				CUST_MOBILE custMobile,
+				NAME name,
+                WITHDRAW_BANK withdrawBank,
+				BRANCH_BANK branchBank,
+				WITHDRAW_AMOUNT withdrawAmount,
+                WITHDRAW_ACCOUNT withdrawAccount,
+				WITHDRAW_TIME withdrawTime,
+				ACCOUNT_ID accountId,
+                WITHDRAW_STATUS withdrawStatus
+			from TBL_FUND_WITHDRAW_TURNOVER where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findWithdrawTurnover" resultMap="findWithdrawTurnoverResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_FUND_WITHDRAW_TURNOVER
+		]]>
+        <where>
+            <if test="custMobile != null and custMobile != ''">
+                <![CDATA[
+                    CUST_MOBILE = #{custMobile}
+                ]]>
+            </if>
+            <if test="withdrawStatus != null and withdrawStatus != ''">
+                <![CDATA[
+                    and WITHDRAW_STATUS = #{withdrawStatus}
+                ]]>
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[
+                    and str_to_date(WITHDRAW_TIME, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[
+                    and str_to_date(WITHDRAW_TIME, '%Y%m%d') <= str_to_date(#{endDate}, '%Y%m%d')
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by WITHDRAW_TIME desc
+        ]]>
+	</select>
+    
+    <select id="findWithdrawTurnoverExport" resultMap="findWithdrawTurnoverResultMap" parameterType="java.util.HashMap">
+        <![CDATA[
+            select 
+                ID ,
+				CUST_NAME ,
+				CUST_MOBILE ,
+				NAME name,
+                WITHDRAW_BANK ,
+				BRANCH_BANK ,
+				WITHDRAW_AMOUNT ,
+                WITHDRAW_ACCOUNT ,
+				WITHDRAW_TIME ,
+                CASE WITHDRAW_STATUS
+                    when "00" then "未提现"
+                    when "01" then "已提现"
+                END AS WITHDRAW_STATUS
+            from TBL_FUND_WITHDRAW_TURNOVER
+        ]]>
+        <where>
+            <if test="custMobile != null and custMobile != ''">
+                <![CDATA[
+                    CUST_MOBILE = #{custMobile}
+                ]]>
+            </if>
+            <if test="withdrawStatus != null and withdrawStatus != ''">
+                <![CDATA[
+                    and WITHDRAW_STATUS = #{withdrawStatus}
+                ]]>
+            </if>
+            <if test="beginDate != null and beginDate != ''">
+                <![CDATA[
+                    and str_to_date(WITHDRAW_TIME, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+                ]]>
+            </if>
+            <if test="endDate != null and endDate != ''">
+                <![CDATA[
+                    and str_to_date(WITHDRAW_TIME, '%Y%m%d') <= str_to_date(#{endDate}, '%Y%m%d')
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by WITHDRAW_TIME desc
+        ]]>
+    </select>
+    
+	
+	<select id="findWithdrawTurnoverByIds" resultMap="findWithdrawTurnoverResultMap" parameterType="java.util.List">
+		<![CDATA[
+			select *
+			from TBL_FUND_WITHDRAW_TURNOVER where ID in
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+	</select>
+    
+    <update id="updateWithdrawTurnover" parameterType="com.medical.manager.funds.web.model.TblWithdrawTurnover">
+        <![CDATA[
+            update TBL_FUND_WITHDRAW_TURNOVER
+        ]]>
+        <set>
+            <if test="withdrawStatus != null and withdrawStatus != ''">
+                <![CDATA[
+                    WITHDRAW_STATUS = #{withdrawStatus}
+                ]]>
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                ID = #{id}
+            </if>
+        </where>
+    </update>
+    
+    <select id="queryWaitWithdrawals" resultType="java.lang.Integer">
+    	select count(*) from TBL_FUND_WITHDRAW_TURNOVER where WITHDRAW_STATUS='00'
+    </select>
+    
+    <insert id="insert" parameterType="com.medical.manager.funds.web.model.TblWithdrawTurnover" 
+    	keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO tbl_fund_withdraw_turnover
+			(	cust_id,			cust_name,			cust_mobile,	name,
+				withdraw_account,	withdraw_bank,		branch_bank,	withdraw_amount,
+				withdraw_time,		withdraw_status,	account_id
+			)
+		VALUES
+			(	#{CUST_ID},				#{CUST_NAME},		#{CUST_MOBILE},	#{NAME}, 
+				#{WITHDRAW_ACCOUNT},	#{WITHDRAW_BANK},	#{BRANCH_BANK},	#{WITHDRAW_AMOUNT}, 
+				#{WITHDRAW_TIME},		#{WITHDRAW_STATUS},	#{ACCOUNT_ID,jdbcType=BIGINT}
+			)    
+    </insert>
+</mapper>

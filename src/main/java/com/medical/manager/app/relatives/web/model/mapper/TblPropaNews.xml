@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.relatives.web.dao.ITblPropaNewsDao">
+	<resultMap type="com.medical.manager.app.relatives.web.model.TblPropaNews" id="TblPropaNewsMap">
+		<id column="id" property="id"/>
+		<result column="title" property="title"/>
+        <result column="classify" property="classify"/>
+        <result column="publish_time" property="publish_time"/>
+        <result column="views" property="views"/>
+        <result column="img_url" property="img_url"/>
+        <result column="content" property="content"/>
+        <result column="remark" property="remark"/>
+	</resultMap>
+	
+	<sql id="TblPropaNewsColumns">
+		id,title,classify,publish_time,
+		views,img_url,content,remark
+	</sql>
+	
+	<sql id="TblPropaNewsColumns4Insert">
+		title,classify,publish_time,
+		views,img_url,content,remark
+	</sql>
+	<sql id="TblPropaNewsColumns4Values">
+		#{title},#{classify},#{publish_time},
+		#{views},#{img_url},#{content},#{remark}
+	</sql>
+	
+	<select id="findById" resultType="com.medical.manager.app.relatives.web.model.TblPropaNews" parameterType="Long">
+		SELECT <include refid="TblPropaNewsColumns"/> FROM tbl_propa_news WHERE id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.medical.manager.app.relatives.web.model.TblPropaNews" 
+		useGeneratedKeys="true" keyProperty="id">
+			INSERT INTO tbl_propa_news (<include refid="TblPropaNewsColumns4Insert"/>)
+			VALUES (<include refid="TblPropaNewsColumns4Values"/>)
+	</insert>
+	
+	<update id="update" parameterType="com.medical.manager.app.relatives.web.model.TblPropaNews">
+		UPDATE tbl_propa_news 
+		<set>
+			<if test="title != null and title != ''">				title		= #{title,jdbcType=VARCHAR}, </if>
+			<if test="publish_time != null and publish_time != ''">	publish_time= #{publish_time,jdbcType=VARCHAR}, </if>
+			<if test="remark != null and remark != ''">				remark 		= #{remark,jdbcType=VARCHAR}, </if>
+			<if test="img_url != null and img_url != ''">			img_url 	= #{img_url,jdbcType=VARCHAR}, </if>
+			<if test="classify != null and classify != ''">			classify	= #{classify,jdbcType=VARCHAR}, </if>
+			<if test="views != null and views != ''">				views		= #{views,jdbcType=INT}, </if>
+			<if test="content != null and content != ''">			content 	= #{content,jdbcType=VARCHAR}, </if>
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.Long">
+		DELETE FROM tbl_propa_news WHERE id = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 查询某个时间之后的新闻 -->
+	<select id="queryTimeAfter" parameterType="String" resultMap="TblPropaNewsMap">
+		SELECT * FROM tbl_propa_news t WHERE t.publish_time >= #{publish_time}
+	</select>
+	
+	<!-- 查询前number条记录 -->
+	<select id="queryLatelyNumNews" parameterType="Integer" resultMap="TblPropaNewsMap">
+		SELECT * FROM tbl_propa_news t ORDER BY t.publish_time DESC LIMIT 0,#{number}
+	</select>
+	
+</mapper>

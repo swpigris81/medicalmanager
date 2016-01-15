@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.relatives.web.dao.TblCustRelationDao">
+	<resultMap type="com.medical.manager.app.relatives.web.model.TblCustRelation" id="findCustRelationResultMap">
+		<id column="ID" property="id"/>
+		<result column="MOBILE_NO" property="mobileNo"/>
+        <result column="CUST_ID" property="custId"/>
+        <result column="CUST_NAME" property="custName"/>
+        <result column="CUST_Type" property="custType"/>
+        <result column="RELATION_ID" property="relationId"/>
+        <result column="RELATION_MOBILE" property="relationMobile"/>
+        <result column="RELATION_NAME" property="relationName"/>
+        <result column="RELATION_STATUS" property="relationStatus"/>
+        <result column="RELATION_TYPE" property="relationType"/>
+        <result column="AGREE_FLAG" property="agreeFlag"/>
+        <result column="ALLOW_FLAG" property="allowFlag"/>
+        <result column="ALLOWED_FLAG" property="allowedFlag"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.app.relatives.web.model.TblCustRelation" parameterType="Long">
+		<![CDATA[
+			select 
+                ID id,
+				MOBILE_NO mobileNo,
+                CUST_ID custId,
+                CUST_NAME custName,
+                CUST_Type custType,
+                RELATION_ID relationId,
+                RELATION_MOBILE relationMobile,
+                RELATION_NAME relationName,
+                RELATION_STATUS relationStatus,
+                RELATION_TYPE relationType,
+                AGREE_FLAG agreeFlag,
+                ALLOW_FLAG allowFlag,
+                ALLOWED_FLAG allowedFlag
+			from TBL_CUST_RELATION where ID = #{id}
+		]]>
+	</select>
+	
+	<!-- update at 2015-12-19，增加cusId和relationId两个查询条件 -->
+	<select id="findCustRelation" resultMap="findCustRelationResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_CUST_RELATION where 1=1
+		]]>
+		<if test="mobileNo != null and mobileNo != ''">
+			<![CDATA[
+				and MOBILE_NO = #{mobileNo}
+			]]>
+		</if>
+		<if test="id != null and id != ''">
+			<![CDATA[
+				and ID = #{id}
+			]]>
+		</if>
+        <if test="relationMobile != null and relationMobile != ''">
+            <![CDATA[
+                and RELATION_MOBILE = #{relationMobile}
+            ]]>
+        </if>
+        <if test="relationName != null and relationName != ''">
+            <![CDATA[
+                and RELATION_NAME like CONCAT(CONCAT('%', #{relationName}), '%')
+            ]]>
+        </if>
+        <if test="relationStatus != null and relationStatus != ''">
+            <![CDATA[
+                and RELATION_STATUS = #{relationStatus}
+            ]]>
+        </if>
+        <if test="custId != null and custId != ''"> and CUST_ID = #{custId} </if>
+        <if test="relationId != null and relationId != ''"> and RELATION_ID = #{relationId} </if>
+        <if test="allowedFlag != null and allowedFlag != ''"> and ALLOWED_FLAG = #{allowedFlag} </if>
+	</select>
+	
+	<insert id="addNewCustRelation" parameterType="com.medical.manager.app.relatives.web.model.TblCustRelation" 
+		useGeneratedKeys="true" keyProperty="id">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_CUST_RELATION(
+				CUST_ID, MOBILE_NO, CUST_NAME,CUST_TYPE, RELATION_ID,
+				RELATION_MOBILE, RELATION_NAME,RELATION_TYPE, RELATION_STATUS,
+				AGREE_FLAG,ALLOW_FLAG,ALLOWED_FLAG)
+			values(
+				#{custId}, #{mobileNo}, #{custName},#{custType}, #{relationId}, 
+				#{relationMobile}, #{relationName},#{relationType}, #{relationStatus},
+				#{agreeFlag},#{allowFlag},#{allowedFlag})
+		]]>
+	</insert>
+	
+	<update id="updateCustRelation" parameterType="com.medical.manager.app.relatives.web.model.TblCustRelation">
+		<![CDATA[
+			update TBL_CUST_RELATION 
+		]]>
+		<set>
+			<if test="mobileNo != null and mobileNo != ''">
+				<![CDATA[
+					MOBILE_NO = #{mobileNo},
+				]]>
+			</if>
+			<if test="relationMobile != null and relationMobile != ''">
+				<![CDATA[
+					RELATION_MOBILE = #{relationMobile},
+				]]>
+			</if>
+            <if test="relationName != null and relationName != ''">
+                <![CDATA[
+                    RELATION_NAME = #{relationName}
+                ]]>
+            </if>
+            <if test="relationStatus != null and relationStatus != ''">
+                <![CDATA[
+                    RELATION_STATUS = #{relationStatus}
+                ]]>
+            </if>
+            <if test="agreeFlag != null and agreeFlag != ''"> AGREE_FLAG = #{agreeFlag} </if>
+            <if test="allowFlag != null and allowFlag != ''"> ALLOW_FLAG = #{allowFlag} </if>
+            <if test="allowedFlag != null and allowedFlag != ''"> ALLOWED_FLAG = #{allowedFlag} </if>
+		</set>
+		<where>
+			<![CDATA[
+				ID = #{id}
+			]]>
+		</where>
+	</update>
+    
+    <delete id="deleteRelation" parameterType="Long">
+        <![CDATA[
+            delete TBL_CUST_RELATION where ID = #{id} 
+        ]]>
+    </delete>
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.propaganda.web.dao.IPropaBlacklistDao">
+	<resultMap type="com.medical.manager.propaganda.web.model.TblPropaBlacklist" id="findBlacklistResultMap">
+		<id column="ID" property="id"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="USER_MOBILE" property="userMobile"/>
+		<result column="TYPE" property="type"/>
+        <result column="TYPE_NAME" property="typeName"/>
+        <result column="REMARK" property="remark"/>
+		<result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="findById" resultType="com.medical.manager.propaganda.web.model.TblPropaBlacklist" parameterType="Long">
+		<![CDATA[
+			select 
+				ID id,
+				USER_NAME userName,
+				USER_MOBILE userMobile,
+				TYPE type,
+                TYPE_NAME typeName,
+                REMARK remark,
+				CREATE_OPER createOper,
+				CREATE_DATE createDate,
+				CREATE_TIME createTime
+			from TBL_PROPA_BLACK_LIST where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findBlacklist" resultMap="findBlacklistResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select *
+			from TBL_PROPA_BLACK_LIST
+		]]>
+        <where>
+            <if test="userName != null and userName != ''">
+                <![CDATA[
+				    and USER_NAME like CONCAT(CONCAT('%', #{userName}), '%')
+                ]]>
+			</if>
+            <if test="userMobile != null and userMobile != ''">
+                <![CDATA[
+                    and USER_MOBILE = #{userMobile}
+                ]]>
+            </if>
+        </where>
+        <![CDATA[
+            order by CREATE_DATE desc, CREATE_TIME desc
+        ]]>
+	</select>
+	
+	<insert id="addNewBlacklist" parameterType="com.medical.manager.propaganda.web.model.TblPropaBlacklist">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_PROPA_BLACK_LIST(USER_NAME, USER_MOBILE, TYPE, TYPE_NAME, REMARK,
+				CREATE_OPER, CREATE_DATE, CREATE_TIME)
+			values(#{userName}, #{userMobile}, #{type}, #{typeName}, #{remark},
+				#{createOper}, #{createDate}, #{createTime})
+		]]>
+	</insert>
+    
+    <update id="updateBlacklist" parameterType="com.medical.manager.propaganda.web.model.TblPropaBlacklist">
+        <![CDATA[
+            update TBL_PROPA_BLACK_LIST
+        ]]>
+        <set>
+            <if test="userName != null">
+                USER_NAME = #{userName},
+            </if>
+            <if test="userMobile != null">
+                USER_MOBILE = #{userMobile},
+            </if>
+            <if test="type != null">
+                TYPE = #{type},
+            </if>
+            <if test="typeName != null">
+                TYPE_NAME = #{typeName}, 
+            </if>
+            <if test="remark != null">
+                REMARK = #{remark}, 
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                ID = #{id}
+            </if>
+        </where>
+    </update>
+    
+    <delete id="deleteBlacklist" parameterType="java.util.List">
+        <![CDATA[
+            delete from TBL_PROPA_BLACK_LIST where ID in
+        ]]>
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}
+        </foreach>
+    </delete>
+</mapper>

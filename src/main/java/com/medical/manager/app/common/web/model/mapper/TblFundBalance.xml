@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.common.web.dao.ITblFundBalanceDao">
+	<resultMap type="com.medical.manager.app.common.web.model.TblFundBalance" id="TblFundBalanceMap">
+		<id column="cus_id" property="cus_id"/>
+		<result column="balance" property="balance"/>
+		<result column="update_time" property="update_time"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+	
+	<sql id="TblFundBalanceCols">
+		cus_id, balance, update_time,remark
+	</sql>
+	
+	<sql id="TblFundBalanceCols4Values">
+		#{cus_id}, #{balance}, #{update_time}, #{remark}
+	</sql>
+	
+	<!-- 根据主键查询 -->
+	<select id="findByCusId" resultType="com.medical.manager.app.common.web.model.TblFundBalance" parameterType="Long">
+		SELECT <include refid="TblFundBalanceCols"/> FROM tbl_fund_balance WHERE cus_id = #{cus_id}
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insert" parameterType="com.medical.manager.app.common.web.model.TblFundBalance">
+			INSERT INTO tbl_fund_balance (<include refid="TblFundBalanceCols"/>)
+			VALUES (<include refid="TblFundBalanceCols4Values"/>)
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="com.medical.manager.app.common.web.model.TblFundBalance">
+		UPDATE tbl_fund_balance 
+		<set>
+			<if test="balance != null">								cus_id		= #{cus_id,jdbcType=BIGINT}, </if>
+			<if test="update_time != null and update_time != '' ">	update_time	= #{update_time,jdbcType=VARCHAR}, </if>
+			<if test="remark != null and remark != ''">				remark 		= #{remark,jdbcType=VARCHAR}, </if>
+		</set>
+		WHERE cus_id = #{cus_id,jdbcType=BIGINT}
+	</update>
+	
+	<update id="changeBalance" parameterType="com.medical.manager.app.common.web.model.TblFundBalance">
+		UPDATE	tbl_fund_balance t
+		SET		t.balance = t.balance + (#{balance})
+		WHERE	t.cus_id = #{cusId}
+	</update>
+</mapper>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.medical.manager.app.ambulance.web.dao.ITblEvaluateInfoDao" >
+  <resultMap id="BaseResultMap" type="com.medical.manager.app.ambulance.web.model.TblEvaluateInfo" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="CUST_ID" property="custId" jdbcType="BIGINT" />
+    <result column="CUST_NAME" property="custName" />
+    <result column="HEAD_IMG" property="headImg" />
+    <result column="EVALUATED_ID" property="evaluatedId" jdbcType="BIGINT" />
+    <result column="EVALUATE_TIME" property="evaluateTime" jdbcType="VARCHAR" />
+    <result column="EVALUATE_STAR" property="evaluateStar" jdbcType="VARCHAR" />
+    <result column="EVALUATE_CONTENT" property="evaluateContent" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <resultMap id="evaluationResultMap" type="com.medical.manager.app.center.web.vo.EvaluationInfo" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="CUST_ID" property="custId" jdbcType="BIGINT" />
+    <result column="CUST_NAME" property="custName" />
+    <result column="HEAD_IMG" property="headImg" />
+    <result column="EVALUATED_ID" property="evaluatedId" jdbcType="BIGINT" />
+    <result column="EVALUATE_TIME" property="evaluateTime" jdbcType="VARCHAR" />
+    <result column="EVALUATE_STAR" property="evaluateStar" jdbcType="VARCHAR" />
+    <result column="EVALUATE_CONTENT" property="evaluateContent" jdbcType="VARCHAR" />
+    
+    <result column="EVALUATE_TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="EVALUATE_ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+    <result column="EVALUATE_MOBILE_NO" property="mobileNo" jdbcType="VARCHAR" />
+    <result column="EVALUATE_LAST_TIME" property="lastTime" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ID, CUST_ID, EVALUATED_ID, EVALUATE_TIME, EVALUATE_STAR, EVALUATE_CONTENT
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.medical.manager.app.ambulance.web.query.TblEvaluateInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tbl_evaluate_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="queryEvaluateList" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    cbi.real_name CUST_NAME,cbi.HEAD_IMG,tei.*
+    from tbl_evaluate_info tei,TBL_CUS_BASIC_INFO cbi where tei.EVALUATED_ID=cbi.id
+    and cbi.ID = #{cusId}
+  </select>
+  
+  
+  <select id="queryEvaluateInfoList" resultMap="evaluationResultMap" parameterType="java.util.HashMap" >
+    SELECT 
+	 exp.UNIT_NAME EVALUATE_ORG_NAME,cbi.cus_type EVALUATE_TYPE, cbi.phone EVALUATE_MOBILE_NO, tei.*
+	FROM tbl_evaluate_info tei
+	join TBL_CUS_BASIC_INFO cbi
+	on tei.EVALUATED_ID=cbi.id
+	join TBL_CUS_BASIC_EXPAND exp
+	on(cbi.ID=exp.CUS_ID)
+	<where>
+		<if test="type != null and type != ''">
+			cbi.cus_type = #{type}
+		</if>
+		<if test="beginDate != null and beginDate != ''">
+			<![CDATA[
+			and str_to_date(tei.EVALUATE_TIME, '%Y%m%d') >= str_to_date(#{beginDate}, '%Y%m%d')
+			]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			<![CDATA[
+			and str_to_date(tei.EVALUATE_TIME, '%Y%m%d') <= str_to_date(#{endDate}, '%Y%m%d')
+			]]>
+		</if>
+	</where>
+  </select>
+  
+  
+  
+  <select id="countEvaluate" resultType="java.util.HashMap" parameterType="java.lang.Long">
+   	select count(1) count,avg(EVALUATE_STAR) star from tbl_evaluate_info 
+   	where EVALUATED_ID=#{cusId}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_evaluate_info
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tbl_evaluate_info
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.medical.manager.app.ambulance.web.model.TblEvaluateInfo" >
+    insert into tbl_evaluate_info (ID, CUST_ID, EVALUATED_ID, 
+      EVALUATE_TIME, EVALUATE_STAR, EVALUATE_CONTENT
+      )
+    values (#{id,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{evaluatedId,jdbcType=BIGINT}, 
+      #{evaluateTime,jdbcType=VARCHAR}, #{evaluateStar,jdbcType=VARCHAR}, #{evaluateContent,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.medical.manager.app.ambulance.web.model.TblEvaluateInfo" >
+    insert into tbl_evaluate_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="custId != null" >
+        CUST_ID,
+      </if>
+      <if test="evaluatedId != null" >
+        EVALUATED_ID,
+      </if>
+      <if test="evaluateTime != null" >
+        EVALUATE_TIME,
+      </if>
+      <if test="evaluateStar != null" >
+        EVALUATE_STAR,
+      </if>
+      <if test="evaluateContent != null" >
+        EVALUATE_CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="evaluatedId != null" >
+        #{evaluatedId,jdbcType=BIGINT},
+      </if>
+      <if test="evaluateTime != null" >
+        #{evaluateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluateStar != null" >
+        #{evaluateStar,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluateContent != null" >
+        #{evaluateContent,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.medical.manager.app.ambulance.web.query.TblEvaluateInfoExample" resultType="java.lang.Integer" >
+    select count(*) from tbl_evaluate_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.medical.manager.app.ambulance.web.model.TblEvaluateInfo" >
+    update tbl_evaluate_info
+    <set >
+      <if test="custId != null" >
+        CUST_ID = #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="evaluatedId != null" >
+        EVALUATED_ID = #{evaluatedId,jdbcType=BIGINT},
+      </if>
+      <if test="evaluateTime != null" >
+        EVALUATE_TIME = #{evaluateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluateStar != null" >
+        EVALUATE_STAR = #{evaluateStar,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluateContent != null" >
+        EVALUATE_CONTENT = #{evaluateContent,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.medical.manager.app.ambulance.web.model.TblEvaluateInfo" >
+    update tbl_evaluate_info
+    set CUST_ID = #{custId,jdbcType=BIGINT},
+      EVALUATED_ID = #{evaluatedId,jdbcType=BIGINT},
+      EVALUATE_TIME = #{evaluateTime,jdbcType=VARCHAR},
+      EVALUATE_STAR = #{evaluateStar,jdbcType=VARCHAR},
+      EVALUATE_CONTENT = #{evaluateContent,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.system.web.dao.IRoleDao">
+	<resultMap type="com.medical.manager.system.web.model.TblRole" id="roleResultMap">
+		<id column="ROLE_ID" property="roleId"/>
+		<result column="ROLE_NAME" property="roleName"/>
+		<result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_OPER" property="modifyOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_DATE" property="modifyDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_TIME" property="modifyTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="REMARK" property="remark" javaType="String" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap type="com.medical.manager.system.web.model.TblRoleAuthority" id="authorityResultMap">
+		<id column="ID" property="id"/>
+		<result column="ROLE_ID" property="roleId"/>
+		<result column="MENU_ID" property="menuId"/>
+		<result column="CREATE_OPER" property="createOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_DATE" property="createDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_OPER" property="modifyOper" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_DATE" property="modifyDate" javaType="String" jdbcType="VARCHAR"/>
+		<result column="MODIFY_TIME" property="modifyTime" javaType="String" jdbcType="VARCHAR"/>
+		<result column="REMARK" property="remark" javaType="String" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="findAllRoleWithPaging" resultMap="roleResultMap" parameterType="java.util.HashMap">
+		<![CDATA[
+			select
+				*
+			from TBL_ROLE where 1=1
+		]]>
+        <if test="roleName != null and roleName != ''">
+            <![CDATA[
+                and ROLE_NAME like CONCAT(CONCAT('%', #{roleName}), '%')
+            ]]>
+        </if>
+        <![CDATA[
+            order by ROLE_ID
+        ]]>
+	</select>
+	
+	<select id="findAllRoleWithoutPaging" resultMap="roleResultMap">
+		<![CDATA[
+			select
+				*
+			from TBL_ROLE where 1=1
+			order by ROLE_ID
+		]]>
+	</select>
+	
+	<select id="findRoleById" resultType="com.medical.manager.system.web.model.TblRole" parameterType="Long">
+		<![CDATA[
+			select
+				ROLE_ID roleId,
+				ROLE_NAME roleName,
+				CREATE_OPER createOper,
+				CREATE_DATE createDate,
+				CREATE_TIME createTime,
+				MODIFY_OPER modifyOper,
+				MODIFY_DATE modifyDate,
+				MODIFY_TIME modifyTime,
+				REMARK remark 
+			from TBL_ROLE where ROLE_ID = #{roleId}
+		]]>
+	</select>
+	
+	
+	<select id="findMenuById" resultType="com.medical.manager.system.web.model.TblRoleAuthority" parameterType="Long">
+		<![CDATA[
+			select 
+				ID id,
+				ROLE_ID roleId,
+				MENU_ID menuId,
+				CREATE_OPER createOper,
+				CREATE_DATE createDate,
+				CREATE_TIME createTime,
+				MODIFY_OPER modifyOper,
+				MODIFY_DATE modifyDate,
+				MODIFY_TIME modifyTime,
+				REMARK remark 
+			from TBL_ROLE_AUTHORITY where ID = #{id}
+		]]>
+	</select>
+	
+	<select id="findMenuByRoleId" resultMap="authorityResultMap"  parameterType="Long">
+		<![CDATA[
+			select a.* from TBL_ROLE_AUTHORITY a join TBL_MENU m 
+			on(a.MENU_ID = m.MENU_ID)
+			where ROLE_ID = #{roleId}
+		]]>
+	</select>
+	
+	<select id="findMenuByMenuId" resultMap="authorityResultMap"  parameterType="Long">
+		<![CDATA[
+			select * from TBL_ROLE_AUTHORITY where MENU_ID = #{menuId}
+		]]>
+	</select>
+	
+	<insert id="addNewRole" useGeneratedKeys="true" keyProperty="roleId" parameterType="com.medical.manager.system.web.model.TblRole">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_ROLE(ROLE_NAME, CREATE_OPER,
+				CREATE_DATE, CREATE_TIME, MODIFY_OPER, MODIFY_DATE, MODIFY_TIME, REMARK)
+			values(#{roleName}, #{createOper}, #{createDate}, #{createTime}, 
+				#{modifyOper}, #{modifyDate}, #{modifyTime}, #{remark})
+		]]>
+	</insert>
+	
+	<update id="updateRole" parameterType="com.medical.manager.system.web.model.TblRole">
+		<![CDATA[
+			update TBL_ROLE
+		]]>
+		<set>
+			<if test="roleName != null">
+				ROLE_NAME = #{roleName},
+			</if>
+			<if test="modifyOper != null">
+				MODIFY_OPER = #{modifyOper}, 
+			</if>
+			<if test="modifyDate != null">
+				MODIFY_DATE = #{modifyDate}, 
+			</if>
+			<if test="modifyTime != null">
+				MODIFY_TIME = #{modifyTime},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark}
+			</if>
+		</set>
+		<where>
+			ROLE_ID = #{roleId}
+		</where>
+	</update>
+	
+	<insert id="addNewAuthority" parameterType="com.medical.manager.system.web.model.TblRoleAuthority">
+		<!-- 主键是自增的字段 -->
+		<![CDATA[
+			insert into TBL_ROLE_AUTHORITY(ROLE_ID, MENU_ID, CREATE_OPER,
+				CREATE_DATE, CREATE_TIME, MODIFY_OPER, MODIFY_DATE, MODIFY_TIME, REMARK)
+			values(#{roleId}, #{menuId}, #{createOper}, #{createDate}, #{createTime}, 
+				#{modifyOper}, #{modifyDate}, #{modifyTime}, #{remark})
+		]]>
+	</insert>
+	
+	<insert id="saveAuthorityBatch" parameterType="java.util.List">
+		<![CDATA[
+		insert into TBL_ROLE_AUTHORITY(ROLE_ID, MENU_ID, CREATE_OPER,
+				CREATE_DATE, CREATE_TIME, MODIFY_OPER, MODIFY_DATE, MODIFY_TIME, REMARK)
+		values 
+		]]>
+		<foreach collection="list" index="index" item="item" separator=",">
+		<![CDATA[
+			(#{item.roleId}, #{item.menuId}, #{item.createOper}, #{item.createDate}, #{item.createTime}, 
+				#{item.modifyOper}, #{item.modifyDate}, #{item.modifyTime}, #{item.remark})
+		]]>
+		</foreach>
+	</insert>
+	
+	<delete id="deleteAuthority" parameterType="Long">
+		<![CDATA[
+			delete from TBL_ROLE_AUTHORITY where ROLE_ID = #{roleId}
+		]]>
+	</delete>
+	
+	<delete id="deleteAuthorityByMenuId" parameterType="Long">
+		<![CDATA[
+			delete from TBL_ROLE_AUTHORITY where MENU_ID = #{menuId}
+		]]>
+	</delete>
+	
+	<delete id="deleteRoleByRoleId" parameterType="Long">
+		<![CDATA[
+			delete from TBL_ROLE where ROLE_ID = #{roleId}
+		]]>
+	</delete>
+</mapper>

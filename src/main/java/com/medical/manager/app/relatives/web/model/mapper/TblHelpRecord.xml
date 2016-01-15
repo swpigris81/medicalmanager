@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.relatives.web.dao.ITblHelpRecordDao">
+	<resultMap type="com.medical.manager.app.relatives.web.model.TblHelpRecord" id="TblHelpRecordMap">
+		<id column="id" property="id"/>
+		<result column="device_no" property="device_no"/>
+        <result column="machine_code_id" property="machine_code_id"/>
+        <result column="status" property="status"/>
+        <result column="open_time" property="open_time"/>
+        <result column="use_id" property="use_id"/>
+        <result column="open_id" property="open_id"/>
+        <result column="remark" property="remark"/>
+	</resultMap>
+	
+	<sql id="TblHelpRecordColumns">
+		id,device_no,machine_code_id,status,
+		open_time,use_id,open_id,remark
+	</sql>
+	
+	<sql id="TblHelpRecordColumns4Insert">
+		device_no,	machine_code_id,	status,
+		open_time,	use_id,				open_id,	remark
+	</sql>
+	<sql id="TblHelpRecordColumns4Values">
+		#{device_no},	#{machine_code_id},	#{status},
+		#{open_time},	#{use_id},			#{open_id},	#{remark}
+	</sql>
+	
+	<select id="findById" resultType="com.medical.manager.app.relatives.web.model.TblHelpRecord" parameterType="Long">
+		SELECT <include refid="TblHelpRecordColumns"/> FROM tbl_cus_device WHERE id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.medical.manager.app.relatives.web.model.TblHelpRecord" 
+		useGeneratedKeys="true" keyProperty="id">
+			INSERT INTO tbl_cus_device (<include refid="TblHelpRecordColumns4Insert"/>)
+			VALUES (<include refid="TblHelpRecordColumns4Values"/>)
+	</insert>
+	
+	<select id="queryByMap" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			r.id helpId,
+			r.rescue_id rescueId,
+			r.rescue_name rescueName,
+			r.ambulance_id ambulanceId,
+			r.ambulance_no ambulanceNo,
+			r.rescue_state rescueState,
+			r.ambulance_state ambulanceState,
+			i.evaluate_time rEvaluateTime,
+			i.evaluate_star rEvaluateStar,
+			i.evaluate_content rEvaluateContent,
+			iam.evaluate_time aEvaluateTime,
+			iam.evaluate_star aEvaluateStar,
+			iam.evaluate_content aEvaluateContent
+		FROM
+			tbl_help_record r
+		LEFT JOIN tbl_evaluate_info i ON r.rescue_evaluation_id = i.ID
+		LEFT JOIN tbl_evaluate_info iam ON r.ambulance_evaluation_id = iam.ID
+		<where>
+			<if test="cus_phone != null and cus_phone != ''"> AND r.cus_phone = #{cus_phone} </if>
+			<if test="cus_id != null and cus_id != ''"> AND r.cus_id = #{cus_id} </if>
+		</where>
+	</select>
+</mapper>

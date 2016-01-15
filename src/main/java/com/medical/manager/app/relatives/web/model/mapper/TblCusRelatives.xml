@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.relatives.web.dao.ITblCusRelativesDao">
+	<resultMap type="com.medical.manager.app.relatives.web.model.TblCusRelatives" id="TblCusRelativesMap">
+		<id column="ID" property="id"/>
+        <result column="CUST_ID" property="custId"/>
+		<result column="RELATIVES_NAME" property="relativesName"/>
+        <result column="RELATIVES_RELATION" property="relativesRelation"/>
+        <result column="PHONE" property="phone"/>
+        <result column="SMALL_IMAGE_URL" property="smallImageUrl"/>
+        <result column="BIG_IMAGE_URL" property="bigImageUrl"/>
+        <result column="AGE" property="age"/>
+        <result column="HEIGHT" property="height"/>
+        <result column="WEIGHT" property="weight"/>
+        <result column="CONSTELLATION" property="constellation"/>
+        <result column="BIRTHDAY" property="birthday"/>
+        <result column="REMARK" property="remark"/>
+	</resultMap>
+	
+	<sql id="TblCusRelativesAllColumns">
+		id, cus_id, relatives_name, relatives_relation,
+		phone, small_image_url, big_image_url, age,
+		height, weight, constellation, birthday,
+		remark
+	</sql>
+	
+	<!-- 查询客户亲属详情 -->
+	<select id="queryRelativesDetail" resultMap="TblCusRelativesMap" parameterType="Long">
+		SELECT	<include refid="TblCusRelativesAllColumns"/>
+		FROM	tbl_cus_relatives
+		WHERE	id = #{id}
+	</select>
+	
+	<!-- 查询客户亲属列表 -->
+	<select id="queryRelativesList" resultMap="TblCusRelativesMap" parameterType="Long">
+		SELECT	<include refid="TblCusRelativesAllColumns"/>
+		FROM	tbl_cus_relatives
+		WHERE	cus_id = #{custId}
+	</select>
+</mapper>

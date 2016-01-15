@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.stat.web.dao.ICusLoginStatDao">
+
+	<!-- login stat -->
+	<select id="queryStatLoginList" parameterType="java.util.HashMap"
+		resultType="com.medical.manager.stat.web.dto.CusLoginStatDto">
+		SELECT
+			info.nickname,
+			info.real_name realName,
+			info.last_login_ip lastLoginIp,
+			info.last_login_time lastLoginTime,
+			IFNULL(s.login_count,0) loginCount
+		FROM
+			tbl_cus_basic_info info
+		LEFT JOIN (
+			SELECT
+				cus_id,
+				COUNT(0) login_count
+			FROM
+				tbl_cus_login_seq
+			GROUP BY
+				cus_id
+		) s ON info.ID = s.cus_id
+		<where>
+			<if test="lastLoginTimeStart != null"><![CDATA[ AND info.last_login_time >= #{lastLoginTimeStart} ]]></if>
+			<if test="lastLoginTimeEnd != null"><![CDATA[ AND info.last_login_time <= #{lastLoginTimeEnd} ]]></if>
+			<if test="nickname != null"> AND info.nickname = #{nickname} </if>
+			<if test="realName != null"> AND info.real_name = #{realName} </if>
+		</where>
+	</select>
+
+</mapper>

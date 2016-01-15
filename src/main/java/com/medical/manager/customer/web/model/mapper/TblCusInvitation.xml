@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.medical.manager.customer.web.dao.ICusInvitationDao">
+	<resultMap id="CusInvitationInfoMap"
+		type="com.medical.manager.customer.web.model.TblCusInvitation">
+		<id column="id" property="id"/>
+		<result column="cus_id" property="cusId"/>
+		<result column="remark" property="remark"/>
+		<result column="back_cash_flag" property="backCashFlag"/>
+		<result column="back_cash_time" property="backCashTime"/>
+		<result column="invitation_code" property="invitationCode"/>
+	</resultMap>
+	
+	<insert id="addNewCusInvitation" parameterType="com.medical.manager.customer.web.model.TblCusInvitation"
+		useGeneratedKeys="true" keyColumn="id">
+		<![CDATA[
+			insert into tbl_cus_invitation(cus_id, invitation_code, remark,back_cash_flag,back_cash_time)
+			values(#{cusId}, #{invitationCode}, #{remark},#{backCashFlag},#{backCashTime})
+		]]>
+	</insert>
+	
+	<!-- 根据客户id更新返现返现标识和返现时间 -->
+	<update id="updateBackCashByCusId" parameterType="com.medical.manager.customer.web.model.TblCusInvitation">
+		UPDATE	tbl_cus_invitation t
+		SET 	t.back_cash_flag = #{backCashFlag},
+		 		t.back_cash_time = #{backCashTime}
+		WHERE	t.cus_id = #{cusId}
+	</update>
+	
+	<!-- 根据客户id查询是否已返现 -->
+	<select id="queryBackCashByCusId" parameterType="Long"
+		resultType="com.medical.manager.customer.web.model.TblCusInvitation">
+		SELECT 	*
+		FROM	tbl_cus_invitation t
+		WHERE	t.cus_id = #{cusId}
+	</select>
+</mapper>

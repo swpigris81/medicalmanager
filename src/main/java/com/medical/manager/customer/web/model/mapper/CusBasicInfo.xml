@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.medical.manager.customer.web.dao.ICusBasicInfoDao">
+	<resultMap id="CusBasicInfoMap"
+		type="com.medical.manager.customer.web.model.CusBasicInfo">
+		<id column="id" property="id"/>
+		<result column="nickname" property="nickname"/>
+		<result column="real_name" property="realName"/>
+		<result column="phone" property="phone"/>
+		<result column="id_card_no" property="idCardNo"/>
+		<result column="cus_type" property="cusType"/>
+		<result column="head_img" property="headImg"/>
+		<result column="province" property="province"/>
+		<result column="city" property="city"/>
+		<result column="county" property="county"/>
+		<result column="register_time" property="registerTime"/>
+		<result column="service_expire_time" property="serviceExpireTime"/>
+		<result column="credit_score" property="creditScore"/>
+		<result column="last_login_ip" property="lastLoginIp"/>
+		<result column="last_login_time" property="lastLoginTime"/>
+		<result column="activation_flag" property="activationFlag"/>
+		<result column="activation_time" property="activationTime"/>
+		<result column="activation_user" property="activationUser"/>
+		<result column="lock_flag" property="lockFlag"/>
+		<result column="lock_time" property="lockTime"/>
+		<result column="lock_user" property="lockUser"/>
+		<result column="remark" property="remark"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="lock_expire_time" property="lockExpireTime"/>
+		
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+        
+        <result column="HAS_SENT" property="hasSent"/>
+        <result column="AMBULANCE_STATUS" property="ambulanceStatus"/>
+        <result column="STATUS_REASON" property="statusReason"/>
+        <result column="YEAR_SCORE" property="yearScore"/>
+        <result column="SCORE_YEAR" property="scoreYear"/>
+        <result column="INVITATION_CODE" property="invitationCode"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        
+        <association column="CUS_ID" property="expand" resultMap="TblCusBasicExpandMap"/>
+	</resultMap>
+	<resultMap type="com.medical.manager.authentication.web.model.TblCusBasicExpand" id="TblCusBasicExpandMap">
+	  	<id column="ID" property="id" jdbcType="BIGINT" />
+	    <result column="CUS_ID" property="cusId" jdbcType="BIGINT" />
+	    <result column="UNIT_NAME" property="unitName" jdbcType="VARCHAR" />
+	    <result column="UNIT_ADDRESS" property="unitAddress" jdbcType="VARCHAR" />
+	    <result column="TOLL_LEVEL" property="tollLevel" jdbcType="VARCHAR" />
+	    <result column="USE_PROVINCE" property="useProvince" jdbcType="VARCHAR" />
+	    <result column="USE_CITY" property="useCity" jdbcType="VARCHAR" />
+	    <result column="USE_COUNTY" property="useCounty" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 查询个人中心展示相关信息 2015-12-15 -->
+	<select id="queryRelativesIndex" parameterType="Long" resultType="java.util.Map">
+		SELECT	d.open_flag		openFlag,
+				d.alarm_flag	alarmFlag,
+				i.year_score	yearScore
+		FROM	tbl_cus_basic_info i
+		LEFT JOIN tbl_cus_device d ON i.id = d.use_id
+		WHERE	i.id = #{id}
+	</select>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="java.lang.Long">
+		DELETE FROM tbl_cus_basic_info WHERE id = #{id}
+	</delete>
+	
+	<!-- 查询某市级120中心和隶属该市的区县级120中心集合 -->
+	<select id="queryCity120" parameterType="java.util.HashMap" 
+		resultType="com.medical.manager.authentication.web.model.TblCusBasicExpand">
+		SELECT
+			cbe.id,
+			cbe.cus_id AS cusId,
+			cbe.use_province AS useProvince,
+			cbe.use_city AS useCity,
+			cbe.use_county AS useCounty,
+			cbe.unit_name AS unitName
+		FROM
+			tbl_cus_basic_info cbi
+		LEFT JOIN tbl_cus_basic_expand cbe ON cbi.id = cbe.cus_id
+		WHERE
+			cbi.cus_type = #{cusType}
+		AND cbe.use_city = #{useCity}
+	</select>
+	
+	<!-- 查询某省120中心和隶属该省的市区县级120中心集合 -->
+	<select id="queryProvince120" parameterType="java.util.HashMap" 
+		resultType="com.medical.manager.authentication.web.model.TblCusBasicExpand">
+		SELECT
+			cbe.id,
+			cbe.cus_id AS cusId,
+			cbe.use_province AS useProvince,
+			cbe.use_city AS useCity,
+			cbe.use_county AS useCounty,
+			cbe.unit_name AS unitName
+		FROM
+			tbl_cus_basic_info cbi
+		LEFT JOIN tbl_cus_basic_expand cbe ON cbi.id = cbe.cus_id
+		WHERE
+			cbi.cus_type = #{cusType}
+		AND cbe.use_province = #{useProvince}
+	</select>
+	
+	<!-- 查询某省120中心和隶属该省的市区县级120中心集合 -->
+	<select id="queryCenterList" parameterType="java.util.HashMap" 
+		resultType="com.medical.manager.authentication.web.model.TblCusBasicExpand">
+		SELECT
+			cbe.id,
+			cbe.cus_id AS cusId,
+			cbe.use_province AS useProvince,
+			cbe.use_city AS useCity,
+			cbe.use_county AS useCounty,
+			cbe.unit_name AS unitName
+		FROM
+			tbl_cus_basic_info cbi
+		LEFT JOIN tbl_cus_basic_expand cbe ON cbi.id = cbe.cus_id
+		WHERE 1=1
+		and cbi.cus_type = #{cusType}
+		<if test="keyword != null and keyword != ''">
+			and cbe.unit_name like CONCAT(CONCAT('%', #{keyword}), '%')
+		</if>
+	</select>
+    
+    <!-- 查询某省120中心和隶属该省的市区县级120中心集合 -->
+    <select id="queryCenterListByParams" parameterType="java.util.HashMap" resultMap="CusBasicInfoMap">
+        SELECT *
+        FROM
+            tbl_cus_basic_info cbi
+        LEFT JOIN tbl_cus_basic_expand cbe ON cbi.id = cbe.cus_id
+        WHERE 1=1
+        and cbi.cus_type = #{cusType}
+        <if test="keyword != null and keyword != ''">
+            and cbe.unit_name like CONCAT(CONCAT('%', #{keyword}), '%')
+        </if>
+        <if test="province != null and province != ''">
+            and cbi.province = #{province}
+        </if>
+        <if test="city != null and city != ''">
+            and cbi.city = #{city}
+        </if>
+        <if test="county != null and county != ''">
+            and cbi.county = #{county}
+        </if>
+    </select>
+	
+	<!-- 通过id查询 -->
+	<select id="queryById" parameterType="java.lang.Long" resultMap="CusBasicInfoMap">
+		SELECT *
+		FROM tbl_cus_basic_info t
+		WHERE t.id = #{id}
+	</select>
+    
+    <select id="queryByMobileNo" parameterType="java.lang.String" resultMap="CusBasicInfoMap">
+        <![CDATA[
+            select
+                *
+            from tbl_cus_basic_info where phone = #{phone}
+        ]]>
+    </select>
+	
+	<!-- 查询用户信息 -->
+	<select id="queryBasicInfoList" parameterType="java.util.HashMap" resultMap="CusBasicInfoMap">
+		SELECT
+			t.*, c.city city_name,
+			p.province province_name
+		FROM
+			tbl_cus_basic_info t
+		LEFT JOIN tbl_sys_city c ON t.city = c.cityid
+		LEFT JOIN tbl_sys_province p ON t.province = p.provinceid
+		<include refid="whereSql"/>
+	</select>
+	
+	<!-- 导出用户信用积分信息 -->
+	<select id="queryBasicInfoList4Export" parameterType="java.util.HashMap" resultMap="CusBasicInfoMap">
+		SELECT
+			t.nickname,
+			t.real_name,
+			t.phone,
+			t.id_card_no,
+			t.register_time,
+			t.credit_score,
+			CASE t.cus_type
+				WHEN '01' THEN '老人端'
+				WHEN '02' THEN '亲属端'
+				WHEN '03' THEN '急救车'
+				WHEN '04' THEN '120中心'
+			END AS cus_type,
+			c.city city_name,
+			p.province province_name
+		FROM
+			tbl_cus_basic_info t
+		LEFT JOIN tbl_sys_city c ON t.city = c.cityid
+		LEFT JOIN tbl_sys_province p ON t.province = p.provinceid
+		<include refid="whereSql"/>
+	</select>
+	
+	<sql id="whereSql">
+		<where>
+			<if test="city != null">		AND t.city = #{city}			</if>
+			<if test="phone != null">		AND t.phone = #{phone}			</if>
+			<if test="cusType != null">		AND t.cus_type = #{cusType}		</if>
+			<if test="realName != null">	AND t.real_name = #{realName}	</if>
+			<if test="nickname != null">	AND t.nickname = #{nickname}	</if>
+			<if test="province != null">	AND t.province = #{province}	</if>
+			<if test="lockFlag != null">	AND t.lock_flag = #{lockFlag}	</if>
+			<if test="creditScore != null">		AND t.credit_score = #{creditScore}			</if>
+			<if test="activationFlag != null">	AND t.activation_flag = #{activationFlag}	</if>
+			<if test="creditScoreEnd != null">		<![CDATA[AND t.credit_score <= #{creditScoreEnd}]]>		</if>
+			<if test="creditScoreStart != null"> 	<![CDATA[AND t.credit_score >= #{creditScoreStart}]]>	</if>
+			<if test="registerTimeEnd != null"> 	<![CDATA[AND t.register_time <= #{registerTimeEnd}]]>	</if>
+			<if test="registerTimeStart != null">	<![CDATA[AND t.register_time >= #{registerTimeStart}]]>	</if>
+		</where> 
+	</sql>
+	
+	<sql id="CusBasicInfoAllcolumns4Insert">
+		nickname,			real_name,				phone,
+		province,			city,					county,
+		id_card_no,			cus_type,			
+		register_time,		service_expire_time,	credit_score,
+		activation_flag,	activation_time,		activation_user,		
+		lock_flag,			lock_time,				lock_user,
+		remark,				update_user,			update_time,
+		lock_expire_time,   HAS_SENT,AMBULANCE_STATUS,STATUS_REASON,YEAR_SCORE,SCORE_YEAR,
+		invitation_code
+	</sql>
+	<sql id="CusBasicInfoAllcolumns4Values">
+		#{nickname,jdbcType=VARCHAR}, 		#{realName,jdbcType=VARCHAR},	#{phone,jdbcType=VARCHAR},
+		#{province,jdbcType=VARCHAR}, 		#{city,jdbcType=VARCHAR},		#{county,jdbcType=VARCHAR},
+		#{idCardNo,jdbcType=VARCHAR}, 		#{cusType,jdbcType=VARCHAR},
+		#{registerTime,jdbcType=VARCHAR}, 	#{serviceExpireTime,jdbcType=VARCHAR},#{creditScore,jdbcType=BIGINT},
+		#{activationFlag,jdbcType=VARCHAR}, 	#{activationTime,jdbcType=VARCHAR}, 	#{activationUser,jdbcType=VARCHAR},
+		#{lockFlag,jdbcType=VARCHAR}, 			#{lockTime,jdbcType=VARCHAR},			#{lockUser,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}, 			#{updateUser,jdbcType=VARCHAR}, 		#{updateTime,jdbcType=VARCHAR},
+		#{lockExpireTime,jdbcType=VARCHAR},     #{hasSent,jdbcType=VARCHAR},			#{ambulanceStatus},
+		#{statusReason},	#{yearScore},		#{scoreYear}, #{invitationCode}
+	</sql>	
+	<insert id="insert" parameterType="com.medical.manager.customer.web.model.CusBasicInfo"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into tbl_cus_basic_info ( <include refid="CusBasicInfoAllcolumns4Insert"/>)
+		values ( <include refid="CusBasicInfoAllcolumns4Values"/>)
+	</insert>
+	
+	<update id="update" parameterType="com.medical.manager.customer.web.model.CusBasicInfo">
+		update tbl_cus_basic_info
+		<set>
+			<if test="nickname != null"> nickname = #{nickname,jdbcType=VARCHAR}, </if>
+			<if test="realName != null"> real_name = #{realName,jdbcType=VARCHAR}, </if>
+			<if test="phone != null"> phone = #{phone,jdbcType=VARCHAR}, </if>
+			<if test="idCardNo != null"> id_card_no = #{idCardNo,jdbcType=VARCHAR}, </if>
+			<if test="cusType != null"> cus_type = #{cusType,jdbcType=VARCHAR}, </if>
+			<if test="headImg != null"> head_img = #{headImg,jdbcType=VARCHAR}, </if>
+			<if test="province != null"> province = #{province,jdbcType=VARCHAR}, </if>
+			<if test="city != null"> city = #{city,jdbcType=VARCHAR}, </if>
+			<if test="county != null"> county = #{county,jdbcType=VARCHAR}, </if>
+			<if test="registerTime != null"> register_time = #{registerTime,jdbcType=VARCHAR}, </if>
+			<if test="serviceExpireTime != null"> service_expire_time = #{serviceExpireTime,jdbcType=VARCHAR}, </if>
+			<if test="creditScore != null"> credit_score = #{creditScore,jdbcType=BIGINT}, </if>
+			<if test="lastLoginIp != null"> last_login_ip = #{lastLoginIp,jdbcType=VARCHAR}, </if>
+			<if test="lastLoginTime != null"> last_login_time = #{lastLoginTime,jdbcType=VARCHAR}, </if>
+			<if test="activationFlag != null"> activation_flag = #{activationFlag,jdbcType=VARCHAR}, </if>
+			<if test="activationTime != null"> activation_time = #{activationTime,jdbcType=VARCHAR}, </if>
+			<if test="activationUser != null"> activation_user = #{activationUser,jdbcType=VARCHAR}, </if>
+			<if test="lockFlag != null"> lock_flag = #{lockFlag,jdbcType=VARCHAR}, </if>
+			<if test="lockTime != null"> lock_time = #{lockTime,jdbcType=VARCHAR}, </if>
+			<if test="lockUser != null"> lock_user = #{lockUser,jdbcType=VARCHAR}, </if>
+			<if test="remark != null"> remark = #{remark,jdbcType=VARCHAR}, </if>
+			<if test="updateUser != null"> update_user = #{updateUser,jdbcType=VARCHAR}, </if>
+			<if test="updateTime != null"> update_time = #{updateTime,jdbcType=VARCHAR}, </if>
+			<if test="lockExpireTime != null"> lock_expire_time = #{lockExpireTime,jdbcType=VARCHAR}, </if>
+            <if test="hasSent != null and hasSent != ''"> HAS_SENT = #{hasSent,jdbcType=VARCHAR}, </if>
+            <if test="scoreYear != null and scoreYear != ''"> SCORE_YEAR = #{scoreYear,jdbcType=VARCHAR}, </if>
+            <if test="yearScore != null and yearScore != ''"> YEAR_SCORE = #{yearScore}, </if>
+            <if test="ambulanceStatus != null and ambulanceStatus != ''"> AMBULANCE_STATUS = #{ambulanceStatus,jdbcType=VARCHAR}, </if>
+            <if test="statusReason != null and statusReason != ''"> STATUS_REASON = #{statusReason,jdbcType=VARCHAR}, </if>
+            <if test="invitationCode != null and invitationCode != ''"> INVITATION_CODE = #{invitationCode,jdbcType=VARCHAR}, </if>
+            <if test="longitude != null and longitude != ''"> longitude = #{longitude,jdbcType=VARCHAR}, </if>
+            <if test="latitude != null and latitude != ''"> latitude = #{latitude,jdbcType=VARCHAR} </if>
+		</set>
+		<where> id = #{id,jdbcType=BIGINT} </where>
+	</update>
+	
+	<!-- 更新信用积分 -->
+	<update id="updateCreditScore" parameterType="com.medical.manager.customer.web.model.CusBasicInfo">
+		UPDATE tbl_cus_basic_info t
+		SET t.credit_score = #{creditScore,jdbcType=BIGINT}
+		WHERE t.id = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 增加信用积分 -->
+	<update id="updateAddScore" parameterType="com.medical.manager.customer.web.model.CusBasicInfo">
+		UPDATE tbl_cus_basic_info t
+		SET t.credit_score = t.credit_score + #{creditScore,jdbcType=BIGINT}
+		WHERE t.id = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<select id="queryAmbulanceAuthentication" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from tbl_cus_basic_info t left join tbl_cus_basic_expand e on t.id=e.cus_id
+		where  (e.CHECK_STATUS='00' or e.CHECK_STATUS is null) and cus_type=#{type}
+	</select>
+	
+	<select id="query120DispatchCenter" parameterType="java.lang.Long" resultMap="CusBasicInfoMap">
+		select * from tbl_cus_basic_info where id in (select CENTER_ID from TBL_AMBULANCE_CENTER where CUS_ID=#{cusId})
+	</select>
+</mapper>

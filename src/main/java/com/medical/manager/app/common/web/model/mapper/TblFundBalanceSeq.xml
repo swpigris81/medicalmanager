@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medical.manager.app.common.web.dao.ITblFundBalanceSeqDao">
+	<resultMap type="com.medical.manager.app.common.web.model.TblFundBalanceSeq" id="TblFundBalanceSeqMap">
+		<id column="id" property="id"/>
+		<result column="cus_id" property="cus_id"/>
+		<result column="debit_credit" property="debit_credit"/>
+		<result column="change_amount" property="change_amount"/>
+		<result column="change_time" property="change_time"/>
+		<result column="change_des" property="change_des"/>
+        <result column="remark" property="remark"/>
+        <result column="recommend_flag" property="recommend_flag"/>
+	</resultMap>
+	
+	<sql id="TblFundBalanceSeqCols">
+		id, cus_id, debit_credit, change_amount,
+		change_time,change_des, remark,recommend_flag
+	</sql>
+	
+	<sql id="TblFundBalanceSeqCols4Insert">
+		cus_id, 	debit_credit,	change_amount,
+		change_time,change_des, 	remark,
+		recommend_flag
+	</sql>
+	<sql id="TblFundBalanceSeqCols4Values">
+		#{cus_id},		#{debit_credit},	#{change_amount},
+		#{change_time},	#{change_des},		#{remark},
+		#{recommend_flag}
+	</sql>
+	
+	<!-- 根据主键查询 -->
+	<select id="findById" resultType="com.medical.manager.app.common.web.model.TblFundBalanceSeq" parameterType="Long">
+		SELECT <include refid="TblFundBalanceSeqCols"/> FROM tbl_fund_balance_seq WHERE id = #{id}
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insert" parameterType="com.medical.manager.app.common.web.model.TblFundBalanceSeq" 
+		useGeneratedKeys="true" keyProperty="id">
+			INSERT INTO tbl_fund_balance_seq (<include refid="TblFundBalanceSeqCols4Insert"/>)
+			VALUES (<include refid="TblFundBalanceSeqCols4Values"/>)
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="com.medical.manager.app.common.web.model.TblFundBalanceSeq">
+		UPDATE tbl_fund_balance_seq 
+		<set>
+			<if test="cus_id != null">									cus_id			= #{cus_id,jdbcType=BIGINT}, </if>
+			<if test="debit_credit != null and debit_credit != '' ">	debit_credit	= #{debit_credit,jdbcType=VARCHAR}, </if>
+			<if test="change_amount != null">							change_amount	= #{change_amount,jdbcType=BIGINT}, </if>
+			<if test="change_time != null and change_time != ''">		change_time		= #{change_time,jdbcType=VARCHAR}, </if>
+			<if test="change_des != null and change_des != ''">			change_des		= #{change_des,jdbcType=VARCHAR}, </if>
+			<if test="remark != null and remark != ''">					remark 			= #{remark,jdbcType=VARCHAR}, </if>
+			<if test="recommend_flag != null and recommend_flag != ''">	recommend_flag 	= #{recommend_flag,jdbcType=VARCHAR}, </if>
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 根据客户id查询客户收支记录集合 -->
+	<select id="queryBalanceSeqByCusId" parameterType="java.lang.Long" resultMap="TblFundBalanceSeqMap">
+		SELECT <include refid="TblFundBalanceSeqCols"/> FROM tbl_fund_balance_seq t WHERE t.cus_id = #{cus_id}
+	</select>
+</mapper>
